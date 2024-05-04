@@ -25,6 +25,7 @@
         />
       </div>
     </div>
+    <FooterVue />
   </div>
 </template>
 
@@ -36,6 +37,7 @@ import Products from "@/components/products.vue";
 import { search } from "@/api/den-led.js";
 
 import { useRoute } from "vue-router";
+import FooterVue from "@/components/footer.vue";
 
 const route = useRoute();
 

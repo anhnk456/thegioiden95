@@ -67,25 +67,17 @@
               </a-space>
             </div>
           </div>
-          <a-space class="product-performance mt-2">
+          <a-space class="mt-4">
             <h3>Công suất</h3>
-            <a-radio-group v-model:value="value1">
-              <a-radio-button class="radio-btn" value="a">
-                {{ detailImg?.congSuat }}
-              </a-radio-button>
-            </a-radio-group>
+            <span> {{ detailImg?.congSuat }}</span>
           </a-space>
           <div />
-          <a-space class="product-light mt-1">
+          <a-space class="mt-2">
             <h3>Ánh sáng</h3>
-            <a-radio-group v-model:value="value2">
-              <a-radio-button class="radio-btn" value="a">
-                {{ detailImg?.congSuat }}
-              </a-radio-button>
-            </a-radio-group>
+            <span>{{ detailImg?.anhSang }}</span>
           </a-space>
           <div />
-          <a-space class="product-amout mt-1">
+          <a-space class="product-amout mt-2">
             <h3>Số lượng</h3>
             <a-input-number class="radio-btn" :min="1" :max="100" />
             <a style="margin-left: 2rem"
@@ -105,7 +97,7 @@
                 >Mua ngay</a-button
               >
             </div>
-            <div style="margin-top: 1rem">
+            <div style="margin-top: 2rem">
               <a-button
                 @click="() => (openModal = true)"
                 size="large"
@@ -121,7 +113,7 @@
       </a-row>
       <!-- <Category /> -->
     </div>
-    <a-modal v-model:open="openModal" title="MÔ TẢ VỀ SẢN PHẨM">
+    <a-modal width="60%" v-model:open="openModal" title="MÔ TẢ VỀ SẢN PHẨM">
       <div>
         {{ detailImg.moTa }}
       </div>
@@ -129,6 +121,7 @@
         <a-button key="back" @click="() => (openModal = false)">Đóng</a-button>
       </template>
     </a-modal>
+    <FooterVue />
   </div>
 </template>
 
@@ -138,6 +131,7 @@ import { computed, onMounted, ref } from "vue";
 
 import Category from "@/components/category.vue";
 import HeaderVue from "@/components/header.vue";
+import FooterVue from "@/components/footer.vue";
 import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
 import { detailProduct } from "@/api/den-led.js";
 
@@ -223,6 +217,7 @@ onMounted(async () => {
 
 .img-carousel {
   width: 100%;
+  max-height: 80vh;
   object-fit: contain;
 }
 </style>

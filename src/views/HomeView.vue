@@ -4,6 +4,7 @@ import { onMounted, ref } from "vue";
 import HeaderVue from "@/components/header.vue";
 import CarouselVue from "@/components/carousel.vue";
 import Category from "@/components/category.vue";
+import FooterVue from "@/components/footer.vue";
 import { getAllDanhMuc } from "@/api/den-led.js";
 
 const categoryList = ref([]);
@@ -15,7 +16,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div style="padding-bottom: 40px">
+  <div>
     <HeaderVue />
     <CarouselVue />
     <Category
@@ -24,6 +25,7 @@ onMounted(async () => {
       :category-id="item.id"
       :category-name="item.tenDanhMuc"
     />
+    <FooterVue />
   </div>
 </template>
 

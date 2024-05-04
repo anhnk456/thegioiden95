@@ -59,7 +59,7 @@ defineExpose({ getCategoryList });
       <div class="nav-category">
         <ul class="category-pc">
           <li class="category-pc-item category-pc-show-all">
-            <a href="" class="category-pc-list"> Tất cả SP </a>
+            <a class="category-pc-list"> Tất cả SP </a>
             <ul class="category-all-menu">
               <li
                 v-for="item in categoryList"
