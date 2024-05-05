@@ -21,7 +21,7 @@
         <div class="mt-2">
           <a-space>
             <h3>Địa chỉ:</h3>
-            <span>11c9 geleximce Lê Trọng Tấn Hà Đông - Hà Nội</span>
+            <span>11C9 Geleximce Lê Trọng Tấn Hà Đông - Hà Nội</span>
           </a-space>
         </div>
         <div class="mt-2">

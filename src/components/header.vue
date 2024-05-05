@@ -192,8 +192,8 @@ defineExpose({ getCategoryList });
 }
 
 .category-pc-list:hover {
-  color: var(--white-color);
-  background-color: var(--primary-color);
+  color: var(--green-color);
+  /* background-color: var(--green-color); */
 }
 .category-pc-list::before {
   content: "";
@@ -231,7 +231,7 @@ defineExpose({ getCategoryList });
 }
 
 .category-all-menu-item:hover {
-  background-color: var(--primary-color);
+  background-color: var(--green-color);
 }
 
 .category-all-menu-list {

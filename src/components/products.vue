@@ -4,7 +4,7 @@
       v-for="(item, index) in productList"
       class="product"
       :key="index"
-      :xl="6"
+      :xl="4"
       :lg="6"
       :md="12"
       :sm="24"
@@ -60,6 +60,7 @@ const goDetailSp = (id) => {
   box-sizing: border-box;
   transition: all 0.6s linear;
 }
+
 .productImg:hover {
   cursor: pointer;
   scale: 1.05;
