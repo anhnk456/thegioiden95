@@ -66,6 +66,8 @@ watch(
 .wrapper .container {
   border: 1px solid #e5e5e5;
   border-radius: 10px;
+  overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 .wrapper .container .title {

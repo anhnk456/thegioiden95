@@ -15,7 +15,7 @@
     </div>
     <div class="wrapper">
       <div class="product">
-        <Products :product-list="dataSearch" />
+        <Products is-search :product-list="dataSearch" />
       </div>
       <div style="display: flex; justify-content: center; margin: 30px 0">
         <a-pagination
