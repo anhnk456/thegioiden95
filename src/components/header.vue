@@ -8,12 +8,18 @@ import {
   MenuOutlined,
 } from "@ant-design/icons-vue";
 import { getAllDanhMuc } from "@/api/den-led.js";
+import {
+  getDataCategoryParent,
+  fetchCategoryParent,
+} from "@/store/categoryParent";
 
 const router = useRouter();
 
 const open = ref(false);
 const categoryList = ref([]);
 const categoryHeader = ref([]);
+const categoryListParent = ref([]);
+const categoryListParentHeader = ref([]);
 const valueSearch = ref();
 
 const showDrawer = () => {
@@ -38,8 +44,12 @@ const getCategoryList = () => {
 
 onMounted(async () => {
   const res = await getAllDanhMuc();
+  await fetchCategoryParent();
+
   categoryList.value = res.data;
   categoryHeader.value = categoryList.value.slice(0, 4);
+  categoryListParent.value = getDataCategoryParent();
+  categoryListParentHeader.value = categoryListParent.value.slice(0, 4);
 });
 
 defineExpose({ getCategoryList });
@@ -59,27 +69,50 @@ defineExpose({ getCategoryList });
       <div class="nav-category">
         <ul class="category-pc">
           <li class="category-pc-item category-pc-show-all">
-            <a class="category-pc-list"> Tất cả SP </a>
+            <a-popover placement="bottomRight">
+              <template #content>
+                <a-row style="width: 800px" :gutter="20">
+                  <a-col
+                    v-for="item in categoryListParentHeader"
+                    :key="item.id"
+                    span="6"
+                  >
+                    <div style="font-weight: bold; margin-bottom: 0.5rem">
+                      {{ item.tenThuMuc }}
+                    </div>
+                    <li
+                      v-for="catagory in item.listDanhMuc"
+                      :key="catagory.id"
+                      @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
+                    >
+                      <div class="caterogy-list-item-all">
+                        {{ catagory.tenDanhMuc }}
+                      </div>
+                    </li>
+                  </a-col>
+                </a-row>
+              </template>
+              <a class="category-pc-list"> Tất cả SP </a>
+            </a-popover>
+          </li>
+          <li
+            v-for="item in categoryListParentHeader"
+            :key="item.id"
+            class="category-pc-item category-pc-show-all"
+          >
+            <a class="category-pc-list"> {{ item.tenThuMuc }}</a>
             <ul class="category-all-menu">
               <li
-                v-for="item in categoryList"
-                :key="item.id"
+                v-for="catagory in item.listDanhMuc"
+                :key="catagory.id"
                 class="category-all-menu-item"
-                @click="goSearchSpByDm(item.id, item.tenDanhMuc)"
+                @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
               >
                 <a class="category-all-menu-list">
-                  {{ item.tenDanhMuc }}
+                  {{ catagory.tenDanhMuc }}
                 </a>
               </li>
             </ul>
-          </li>
-          <li
-            v-for="item in categoryHeader"
-            :key="item.id"
-            class="category-pc-item"
-            @click="goSearchSpByDm(item.id, item.tenDanhMuc)"
-          >
-            <a class="category-pc-list"> {{ item.tenDanhMuc }}</a>
           </li>
           <li class="category-pc-item">
             <a class="category-pc-list">Câu hỏi</a>
@@ -179,6 +212,16 @@ defineExpose({ getCategoryList });
 
 .category-pc-item:hover {
   animation: growth linear 0.3s;
+}
+
+.caterogy-list-item-all {
+  font-size: small;
+  margin-left: 1rem;
+}
+
+.caterogy-list-item-all:hover {
+  cursor: pointer;
+  color: var(--green-color);
 }
 
 .category-pc-list {

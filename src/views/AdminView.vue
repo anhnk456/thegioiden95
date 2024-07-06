@@ -2,8 +2,10 @@
   <div>
     <HeaderVue />
     <a-space v-if="isAdmin" class="mt-4" style="margin-left: 2rem" wrap>
+      <a-button @click="onAddCategoryParent">Quản lý danh mục cha</a-button>
       <a-button @click="onAddCategory">Quản lý danh mục</a-button>
       <a-button @click="onAddImg">Quản lý sản phẩm</a-button>
+      <a-button @click="onAddBanner">Quản lý Banner</a-button>
     </a-space>
     <div v-else class="login-container">
       <h2>Đăng nhập</h2>
@@ -57,6 +59,14 @@ const onAddCategory = () => {
 
 const onAddImg = () => {
   router.push("/add-img");
+};
+
+const onAddBanner = () => {
+  router.push("/add-banner");
+};
+
+const onAddCategoryParent = () => {
+  router.push("/add-category-parent");
 };
 
 const submitLogin = () => {

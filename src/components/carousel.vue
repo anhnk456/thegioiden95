@@ -11,32 +11,24 @@
           <right-circle-outlined />
         </div>
       </template>
-      <div>
-        <img
-          class="img-carousel"
-          src="//theme.hstatic.net/200000072226/1000834016/14/ms_banner_img2.jpg?v=2918"
-          alt=""
-        />
-      </div>
-      <div>
-        <img
-          class="img-carousel"
-          src="//theme.hstatic.net/200000072226/1000834016/14/ms_banner_img3.jpg?v=2918"
-          alt=""
-        />
-      </div>
-      <div>
-        <img
-          class="img-carousel"
-          src="//theme.hstatic.net/200000072226/1000834016/14/ms_banner_img4.jpg?v=2918"
-          alt=""
-        />
+      <div v-for="(item, index) in listBanner" :key="index">
+        <img class="img-carousel" :src="item.anhBanner" alt="" />
       </div>
     </a-carousel>
   </div>
 </template>
 <script setup>
+import { getAllBanner } from "@/api/den-led";
 import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
+import { onMounted, ref } from "vue";
+
+const listBanner = ref([]);
+
+onMounted(async () => {
+  const res = await getAllBanner();
+
+  listBanner.value = res.data;
+});
 </script>
 <style scoped>
 /* For demo */

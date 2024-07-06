@@ -34,6 +34,16 @@ const router = createRouter({
       name: "AddImg",
       component: () => import("../views/AddImg.vue"),
     },
+    {
+      path: "/add-category-parent",
+      name: "AddCategoryParent",
+      component: () => import("../views/AddCategoryParent.vue"),
+    },
+    {
+      path: "/add-banner",
+      name: "AddCategoryParent",
+      component: () => import("../views/AddBanner.vue"),
+    },
   ],
 });
 

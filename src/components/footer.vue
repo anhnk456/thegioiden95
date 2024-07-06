@@ -87,6 +87,7 @@ import { FacebookFilled, YoutubeFilled } from "@ant-design/icons-vue";
 }
 .policy {
   margin: 2rem 0;
+  margin-left: 1rem;
 }
 .policy:hover {
   cursor: pointer;

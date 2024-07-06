@@ -3,7 +3,7 @@
     <Header />
     <div class="wrapper-table">
       <div style="margin-bottom: 2rem; float: right">
-        <a-button @click="onOpen" type="primary">Thêm danh mục</a-button>
+        <a-button @click="onOpen" type="primary">Thêm danh mục cha</a-button>
       </div>
       <a-form
         ref="formRef"
@@ -11,9 +11,9 @@
         style="margin-top: 4rem"
         :wrapper-col="{ span: 8 }"
       >
-        <a-form-item label="Tên danh mục" name="tenDanhMuc">
+        <a-form-item label="Tên danh mục cha" name="tenThuMuc">
           <a-input
-            v-model:value="formSearch.tenDanhMuc"
+            v-model:value="formSearch.tenThuMuc"
             @change="handleFilterSearch"
           />
         </a-form-item>
@@ -51,25 +51,12 @@
         >
           <a-form-item
             label="Tên danh mục cha"
-            name="idThuMuc"
-            :rules="[{ required: true, message: 'Vui lòng nhập tên danh mục' }]"
+            name="tenThuMuc"
+            :rules="[
+              { required: true, message: 'Vui lòng nhập tên danh mục cha' },
+            ]"
           >
-            <a-select v-model:value="formAdd.idThuMuc">
-              <a-select-option
-                v-for="(item, index) in optionsThuMuc"
-                :key="index"
-                :value="item.id"
-              >
-                {{ item.tenThuMuc }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item
-            label="Tên danh mục"
-            name="tenDanhMuc"
-            :rules="[{ required: true, message: 'Vui lòng nhập tên danh mục' }]"
-          >
-            <a-input v-model:value="formAdd.tenDanhMuc" />
+            <a-input v-model:value="formAdd.tenThuMuc" />
           </a-form-item>
           <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
             <a-button type="primary" @click="submit">Xác nhận</a-button>
@@ -85,32 +72,29 @@ import { message } from "ant-design-vue";
 
 import Header from "@/components/header.vue";
 import {
-  getAllDanhMuc,
   getAllThuMuc,
-  addCategory,
-  deleteCategory,
-  editCategory,
+  addCategoryParent,
+  deleteCategoryParent,
+  editCategoryParent,
 } from "@/api/den-led";
 
 const formRef = ref();
 const dataSource = ref([]);
 const allDataSouce = ref([]);
-const optionsThuMuc = ref([]);
 const open = ref(false);
 const loadingTable = ref(false);
 const loadingDrawer = ref(false);
 
 const title = computed(() => {
-  return formAdd.id ? "Sửa danh mục" : "Thêm danh mục";
+  return formAdd.id ? "Sửa danh mục cha" : "Thêm danh mục cha";
 });
 
 const formAdd = reactive({
   id: "",
-  tenDanhMuc: "",
-  idThuMuc: "",
+  tenThuMuc: "",
 });
 const formSearch = reactive({
-  tenDanhMuc: "",
+  tenThuMuc: "",
 });
 
 const columns = [
@@ -120,8 +104,8 @@ const columns = [
     width: 50,
   },
   {
-    title: "Tên danh mục",
-    dataIndex: "tenDanhMuc",
+    title: "Tên danh mục cha",
+    dataIndex: "tenThuMuc",
   },
   {
     title: "Thao tác",
@@ -133,7 +117,7 @@ const columns = [
 const fetch = async () => {
   try {
     loadingTable.value = true;
-    const res = await getAllDanhMuc();
+    const res = await getAllThuMuc();
     dataSource.value = res.data;
     allDataSouce.value = res.data;
   } catch (error) {
@@ -145,9 +129,8 @@ const fetch = async () => {
 
 const onOpen = () => {
   open.value = true;
-  formAdd.tenDanhMuc = "";
+  formAdd.tenThuMuc = "";
   formAdd.id = "";
-  formAdd.idThuMuc = "";
 };
 const onClose = () => {
   open.value = false;
@@ -155,8 +138,8 @@ const onClose = () => {
 const onDelete = async (record) => {
   try {
     loadingTable.value = true;
-    await deleteCategory(record.id);
-    message.success("Xóa danh mục thành công");
+    await deleteCategoryParent(record.id);
+    message.success("Xóa danh mục cha thành công");
     await fetch();
   } catch (error) {
     console.log(error);
@@ -166,8 +149,7 @@ const onDelete = async (record) => {
 };
 const onEdit = (record) => {
   open.value = true;
-  formAdd.tenDanhMuc = record.tenDanhMuc;
-  formAdd.idThuMuc = record.idThuMuc;
+  formAdd.tenThuMuc = record.tenThuMuc;
   formAdd.id = record.id;
 };
 
@@ -178,19 +160,18 @@ const submit = async () => {
     if (formAdd.id) {
       const bodyRequest = {
         id: formAdd.id,
-        tenDanhMuc: formAdd.tenDanhMuc,
+        tenThuMuc: formAdd.tenThuMuc,
         anhDanhMuc: "String",
-        idThuMuc: formAdd.idThuMuc,
       };
-      await editCategory(bodyRequest);
-      message.success("Sửa danh mục thành công");
+      await editCategoryParent(bodyRequest);
+      message.success("Sửa danh mục cha thành công");
     } else {
       const bodyRequest = {
-        tenDanhMuc: formAdd.tenDanhMuc,
+        tenThuMuc: formAdd.tenThuMuc,
         anhDanhMuc: "String",
       };
-      await addCategory(bodyRequest);
-      message.success("Thêm mới danh mục thành công");
+      await addCategoryParent(bodyRequest);
+      message.success("Thêm mới danh mục cha thành công");
     }
     onClose();
     await fetch();
@@ -202,19 +183,17 @@ const submit = async () => {
 };
 
 const handleFilterSearch = () => {
-  if (!formSearch.tenDanhMuc) {
+  if (!formSearch.tenThuMuc) {
     dataSource.value = allDataSouce.value;
   } else {
     dataSource.value = allDataSouce.value.filter((item) =>
-      item.tenDanhMuc.includes(formSearch.tenDanhMuc)
+      item.tenThuMuc.includes(formSearch.tenThuMuc)
     );
   }
 };
 
 onMounted(async () => {
   await fetch();
-  const res = await getAllThuMuc();
-  optionsThuMuc.value = res.data;
 });
 </script>
 
