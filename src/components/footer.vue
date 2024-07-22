@@ -27,7 +27,7 @@
         <div class="mt-2">
           <a-space>
             <h3>Số điện thoại:</h3>
-            <span>098300662</span>
+            <span>0983006662</span>
           </a-space>
         </div>
       </a-col>
