@@ -1,6 +1,6 @@
 import { getAllThuMucByDanhMuc } from "@/api/den-led.js";
 
-async function fetch() {
+export async function fetch() {
   try {
     const res = await getAllThuMucByDanhMuc();
     localStorage.setItem("categoriesParent", JSON.stringify(res.data));

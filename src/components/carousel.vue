@@ -63,6 +63,7 @@ onMounted(async () => {
 
 .img-carousel {
   width: 100%;
-  object-fit: contain;
+  height: 650px;
+  object-fit: fill;
 }
 </style>

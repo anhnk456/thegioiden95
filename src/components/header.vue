@@ -73,7 +73,7 @@ defineExpose({ getCategoryList });
               <template #content>
                 <a-row style="width: 800px" :gutter="20">
                   <a-col
-                    v-for="item in categoryListParentHeader"
+                    v-for="item in categoryListParent"
                     :key="item.id"
                     span="6"
                   >

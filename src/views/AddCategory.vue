@@ -101,7 +101,7 @@ const loadingTable = ref(false);
 const loadingDrawer = ref(false);
 
 const title = computed(() => {
-  return formAdd.id ? "Sửa danh mục" : "Thêm danh mục";
+  return formAdd.id ? "Sửa sản phẩm" : "Thêm sản phẩm";
 });
 
 const formAdd = reactive({

@@ -113,7 +113,6 @@ const witdhProduct = computed(() => {
 }
 .productTitle {
   margin: 10px 0 10px 10px;
-  font-size: 2rem;
 }
 .productTitle:hover {
   cursor: pointer;
