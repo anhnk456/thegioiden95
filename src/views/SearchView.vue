@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <a-spin :spinning="loading">
     <Header ref="headerRef" />
     <div class="result-search">
       <h3 style="font-size: 2rem">Kết quả tìm kiếm</h3>
       <div style="margin-top: 20px">
         <h3 style="font-size: 2rem">
-          Tất cả / {{ route.query?.value ? "Từ khóa:" : "Danh mục:" }} :
+          Tất cả / {{ route.query?.value ? "Từ khóa" : "Danh mục" }} :
           {{ route.query?.value || route.query?.name }}
         </h3>
       </div>
@@ -21,12 +21,13 @@
         <a-pagination
           v-model:current="current"
           :total="total"
+          pageSize="12"
           @change="handleChangePage"
         />
       </div>
     </div>
     <FooterVue />
-  </div>
+  </a-spin>
 </template>
 
 <script setup>
@@ -43,52 +44,52 @@ const route = useRoute();
 
 const current = ref(1);
 const headerRef = ref();
+const loading = ref(false);
 
 const dataSearch = ref([]);
 
 const total = computed(() => dataSearch.value[0]?.totalElement || 0);
 
 const handleChangePage = async () => {
-  const paramsUrl = route.query;
+  loading.value = true;
 
-  if (paramsUrl.value) {
+  try {
+    const { query } = route;
+    const { value, id } = query;
+
     const params = {
       page: current.value - 1,
-      size: 10,
-      tenSanPham: paramsUrl.value,
+      size: 12,
+      ...(value ? { tenSanPham: value } : { idDanhMuc: id }),
     };
-    const res = await search(params);
-    dataSearch.value = res.data;
-  } else {
-    const params = {
-      page: current.value - 1,
-      size: 10,
-      idDanhMuc: paramsUrl.id,
-    };
-    const res = await search(params);
-    dataSearch.value = res.data;
+
+    const { data } = await search(params);
+    dataSearch.value = data;
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loading.value = false;
   }
 };
 
 watch(
   () => route.query,
-  async (paramsUrl) => {
-    if (paramsUrl.value) {
-      const params = {
-        page: current.value - 1,
-        size: 10,
-        tenSanPham: paramsUrl.value,
-      };
-      const res = await search(params);
-      dataSearch.value = res.data;
-    } else {
-      const params = {
-        page: current.value - 1,
-        size: 10,
-        idDanhMuc: paramsUrl.id,
-      };
-      const res = await search(params);
-      dataSearch.value = res.data;
+  async (query) => {
+    const { value, id } = query;
+    const params = {
+      page: current.value - 1,
+      size: 12,
+      ...(value ? { tenSanPham: value } : { idDanhMuc: id }),
+    };
+
+    try {
+      loading.value = true;
+      const { data } = await search(params);
+      dataSearch.value = data;
+    } catch (error) {
+      console.error(error);
+    } finally {
+      loading.value = false;
     }
   },
   {

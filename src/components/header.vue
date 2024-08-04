@@ -92,7 +92,7 @@ defineExpose({ getCategoryList });
                   </a-col>
                 </a-row>
               </template>
-              <a class="category-pc-list"> Tất cả SP </a>
+              <a class="category-pc-list"> TẤT CẢ SP </a>
             </a-popover>
           </li>
           <li
@@ -115,10 +115,10 @@ defineExpose({ getCategoryList });
             </ul>
           </li>
           <li class="category-pc-item">
-            <a class="category-pc-list">Câu hỏi</a>
+            <a class="category-pc-list">CÂU HỎI</a>
           </li>
           <li class="category-pc-item">
-            <a class="category-pc-list">Chính sách</a>
+            <a class="category-pc-list">CHÍNH SÁCH</a>
           </li>
         </ul>
       </div>
@@ -226,10 +226,9 @@ defineExpose({ getCategoryList });
 
 .category-pc-list {
   text-decoration: none;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   color: var(--black-color);
   border-radius: 20px;
-  font-weight: 600;
   padding: 5px;
   transition: 0.5s linear;
 }
@@ -283,7 +282,6 @@ defineExpose({ getCategoryList });
   text-decoration: none;
   color: var(--black-color);
   text-transform: uppercase;
-  font-weight: 600;
   display: block;
   position: relative;
   transition: right linear 0.4s;

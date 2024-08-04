@@ -57,12 +57,12 @@
           </div>
           <div class="mt-1">
             <a-space>
-              <h4>Góc chiếu::</h4>
+              <h4>Góc chiếu:</h4>
               <span>{{ detailImg?.gocChieu }}</span>
             </a-space>
             <div class="mt-1">
               <a-space>
-                <h4>Tuổi thọ::</h4>
+                <h4>Tuổi thọ:</h4>
                 <span>{{ detailImg?.tuoiTho }}</span>
               </a-space>
             </div>
