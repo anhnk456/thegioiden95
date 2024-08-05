@@ -21,7 +21,7 @@
         <a-pagination
           v-model:current="current"
           :total="total"
-          pageSize="12"
+          :pageSize="size"
           @change="handleChangePage"
         />
       </div>
@@ -43,6 +43,7 @@ import FooterVue from "@/components/footer.vue";
 const route = useRoute();
 
 const current = ref(1);
+const size = ref(24);
 const headerRef = ref();
 const loading = ref(false);
 
@@ -59,7 +60,7 @@ const handleChangePage = async () => {
 
     const params = {
       page: current.value - 1,
-      size: 12,
+      size: size.value,
       ...(value ? { tenSanPham: value } : { idDanhMuc: id }),
     };
 
@@ -78,7 +79,7 @@ watch(
     const { value, id } = query;
     const params = {
       page: current.value - 1,
-      size: 12,
+      size: size.value,
       ...(value ? { tenSanPham: value } : { idDanhMuc: id }),
     };
 

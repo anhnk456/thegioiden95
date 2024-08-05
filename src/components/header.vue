@@ -15,6 +15,7 @@ import {
 
 const router = useRouter();
 
+const loading = ref(false);
 const open = ref(false);
 const categoryList = ref([]);
 const categoryHeader = ref([]);
@@ -43,133 +44,144 @@ const getCategoryList = () => {
 };
 
 onMounted(async () => {
-  const res = await getAllDanhMuc();
-  await fetchCategoryParent();
+  try {
+    loading.value = true;
+    const res = await getAllDanhMuc();
+    await fetchCategoryParent();
 
-  categoryList.value = res.data;
-  categoryHeader.value = categoryList.value.slice(0, 4);
-  categoryListParent.value = getDataCategoryParent();
-  categoryListParentHeader.value = categoryListParent.value.slice(0, 4);
+    categoryList.value = res.data;
+    // categoryHeader.value = categoryList.value.slice(0, 4);
+    categoryListParent.value = getDataCategoryParent();
+    categoryListParentHeader.value = categoryListParent.value.slice(0, 5);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loading.value = false;
+  }
 });
 
 defineExpose({ getCategoryList });
 </script>
 
 <template>
-  <div class="nav">
-    <div class="nav-pc">
-      <div class="navigation">
-        <a href="/" class="navigation-logo"
-          ><img
-            class="navigation-logo-img"
-            src="//theme.hstatic.net/200000072226/1000834016/14/logo.png?v=2933"
-            alt="Đèn LED VN"
-        /></a>
-      </div>
-      <div class="nav-category">
-        <ul class="category-pc">
-          <li class="category-pc-item category-pc-show-all">
-            <a-popover placement="bottomRight">
-              <template #content>
-                <a-row style="width: 800px" :gutter="20">
-                  <a-col
-                    v-for="item in categoryListParent"
-                    :key="item.id"
-                    span="6"
-                  >
-                    <div style="font-weight: bold; margin-bottom: 0.5rem">
-                      {{ item.tenThuMuc }}
-                    </div>
-                    <li
-                      v-for="catagory in item.listDanhMuc"
-                      :key="catagory.id"
-                      @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
-                    >
-                      <div class="caterogy-list-item-all">
-                        {{ catagory.tenDanhMuc }}
-                      </div>
-                    </li>
-                  </a-col>
-                </a-row>
-              </template>
-              <a class="category-pc-list"> TẤT CẢ SP </a>
-            </a-popover>
-          </li>
-          <li
-            v-for="item in categoryListParentHeader"
-            :key="item.id"
-            class="category-pc-item category-pc-show-all"
-          >
-            <a class="category-pc-list"> {{ item.tenThuMuc }}</a>
-            <ul class="category-all-menu">
-              <li
-                v-for="catagory in item.listDanhMuc"
-                :key="catagory.id"
-                class="category-all-menu-item"
-                @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
-              >
-                <a class="category-all-menu-list">
-                  {{ catagory.tenDanhMuc }}
-                </a>
-              </li>
-            </ul>
-          </li>
-          <li class="category-pc-item">
-            <a class="category-pc-list">CÂU HỎI</a>
-          </li>
-          <li class="category-pc-item">
-            <a class="category-pc-list">CHÍNH SÁCH</a>
-          </li>
-        </ul>
-      </div>
-      <div class="nav-search">
-        <a-input-group compact>
-          <a-select value="all">
-            <a-select-option value="all">Tất cả</a-select-option>
-          </a-select>
-          <a-input
-            v-model:value="valueSearch"
-            style="width: 60%; height: 32px"
-          />
-          <a-button @click="handleSearch">
-            <template #icon><SearchOutlined /></template>
-          </a-button>
-        </a-input-group>
-      </div>
-
-      <div class="nav-cart">
-        <a-button @click="goAdmin" size="large" type="text">
-          <template #icon><UserOutlined /></template>
-        </a-button>
-      </div>
-
-      <a-button
-        @click="showDrawer"
-        size="large"
-        type="text"
-        class="nav-bars-btn"
-      >
-        <template #icon>
-          <MenuOutlined />
-        </template>
-      </a-button>
-      <a-drawer v-model:open="open" title="" placement="right">
-        <div class="nav-mobile">
-          <a class="nav-mobile-content">Tất cả SP</a>
-          <a
-            v-for="item in categoryHeader"
-            :key="item.id"
-            class="nav-mobile-content"
-            @click="goSearchSpByDm(item.id, item.tenDanhMuc)"
-          >
-            {{ item.tenDanhMuc }}
-          </a>
-          <a class="nav-mobile-content">Câu hỏi</a>
-          <a class="nav-mobile-content">Chính sách</a>
+  <a-spin :spinning="loading">
+    <div class="nav">
+      <div class="nav-pc">
+        <div class="navigation">
+          <a href="/" class="navigation-logo"
+            ><img
+              class="navigation-logo-img"
+              src="//theme.hstatic.net/200000072226/1000834016/14/logo.png?v=2933"
+              alt="Đèn LED VN"
+          /></a>
         </div>
-      </a-drawer>
+        <div class="nav-category">
+          <ul class="category-pc">
+            <li class="category-pc-item category-pc-show-all">
+              <a-popover placement="bottomRight">
+                <template #content>
+                  <a-row style="width: 800px" :gutter="20">
+                    <a-col
+                      v-for="item in categoryListParent"
+                      :key="item.id"
+                      span="6"
+                    >
+                      <div style="font-weight: bold; margin-bottom: 0.5rem">
+                        {{ item.tenThuMuc }}
+                      </div>
+                      <li
+                        v-for="catagory in item.listDanhMuc"
+                        :key="catagory.id"
+                        @click="
+                          goSearchSpByDm(catagory.id, catagory.tenDanhMuc)
+                        "
+                      >
+                        <div class="caterogy-list-item-all">
+                          {{ catagory.tenDanhMuc }}
+                        </div>
+                      </li>
+                    </a-col>
+                  </a-row>
+                </template>
+                <a class="category-pc-list"> TẤT CẢ SP </a>
+              </a-popover>
+            </li>
+            <li
+              v-for="item in categoryListParentHeader"
+              :key="item.id"
+              class="category-pc-item category-pc-show-all"
+            >
+              <a class="category-pc-list"> {{ item.tenThuMuc }}</a>
+              <ul class="category-all-menu">
+                <li
+                  v-for="catagory in item.listDanhMuc"
+                  :key="catagory.id"
+                  class="category-all-menu-item"
+                  @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
+                >
+                  <a class="category-all-menu-list">
+                    {{ catagory.tenDanhMuc }}
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <li class="category-pc-item">
+              <a class="category-pc-list">CÂU HỎI</a>
+            </li>
+            <li class="category-pc-item">
+              <a class="category-pc-list">CHÍNH SÁCH</a>
+            </li>
+          </ul>
+        </div>
+        <div class="nav-search">
+          <a-input-group compact>
+            <a-select value="all">
+              <a-select-option value="all">Tất cả</a-select-option>
+            </a-select>
+            <a-input
+              v-model:value="valueSearch"
+              style="width: 60%; height: 32px"
+            />
+            <a-button @click="handleSearch">
+              <template #icon><SearchOutlined /></template>
+            </a-button>
+          </a-input-group>
+        </div>
+
+        <div class="nav-cart">
+          <a-button @click="goAdmin" size="large" type="text">
+            <template #icon><UserOutlined /></template>
+          </a-button>
+        </div>
+
+        <a-button
+          @click="showDrawer"
+          size="large"
+          type="text"
+          class="nav-bars-btn"
+        >
+          <template #icon>
+            <MenuOutlined />
+          </template>
+        </a-button>
+        <a-drawer v-model:open="open" title="" placement="right">
+          <div class="nav-mobile">
+            <a class="nav-mobile-content">Tất cả SP</a>
+            <a
+              v-for="item in categoryHeader"
+              :key="item.id"
+              class="nav-mobile-content"
+              @click="goSearchSpByDm(item.id, item.tenDanhMuc)"
+            >
+              {{ item.tenDanhMuc }}
+            </a>
+            <a class="nav-mobile-content">Câu hỏi</a>
+            <a class="nav-mobile-content">Chính sách</a>
+          </div>
+        </a-drawer>
+      </div>
     </div>
-  </div>
+  </a-spin>
 </template>
 
 <style scoped>
@@ -226,7 +238,7 @@ defineExpose({ getCategoryList });
 
 .category-pc-list {
   text-decoration: none;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--black-color);
   border-radius: 20px;
   padding: 5px;
