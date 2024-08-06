@@ -18,11 +18,11 @@
           @click="goDetailSp(item.id)"
         />
       </div>
-      <h3 class="productTitle">
+      <div class="productTitle">
         {{ item.tenSanPham }}
-      </h3>
+      </div>
       <div class="productPrice">
-        <span class="current-price">{{ item.giaSp }}</span>
+        <span class="current-price">{{ numberToVndCurrency(item.giaSp) }}</span>
       </div>
     </a-col>
   </a-row>
@@ -46,17 +46,18 @@
           @click="goDetailSp(item.id)"
         />
       </div>
-      <h3 class="productTitle">
+      <div class="productTitle">
         {{ item.tenSanPham }}
-      </h3>
+      </div>
       <div class="productPrice">
-        <span class="current-price">{{ item.giaSp }}</span>
+        <span class="current-price">{{ numberToVndCurrency(item.giaSp) }}</span>
       </div>
     </div>
   </a-flex>
 </template>
 
 <script setup>
+import { numberToVndCurrency } from "@/until/format";
 import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 

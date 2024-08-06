@@ -38,7 +38,9 @@
           </div>
           <div class="product-price">
             <a-space>
-              <div class="product-price-sale">{{ detailImg?.giaSp }}</div>
+              <div class="product-price-sale">
+                {{ numberToVndCurrency(detailImg?.giaSp) }}
+              </div>
               <!-- <div class="product-price-original">{{ detailImg?.giaSp }}</div> -->
               <div class="product-price-percent">(Đã bao gồm VAT)</div>
             </a-space>
@@ -134,6 +136,7 @@ import HeaderVue from "@/components/header.vue";
 import FooterVue from "@/components/footer.vue";
 import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
 import { detailProduct } from "@/api/den-led.js";
+import { numberToVndCurrency } from "@/until/format";
 
 const route = useRoute();
 

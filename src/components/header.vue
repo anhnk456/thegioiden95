@@ -65,6 +65,42 @@ defineExpose({ getCategoryList });
 
 <template>
   <a-spin :spinning="loading">
+    <div class="header-top">
+      <a-row>
+        <a-col span="22">
+          <!-- <a-space style="margin-top: 1.3rem">
+            <div style="margin-left: 2rem; font-weight: 600">
+              CÔNG TY CP THƯƠNG MẠI VÀ XÂY DỰNG 138 VIỆT NAM
+            </div>
+            <div
+              class="header-top-more-info"
+              style="font-weight: 600; margin-left: 2rem"
+            >
+              ĐỊA CHỈ
+            </div>
+            <div class="header-top-more-info" style="color: #4fba69">
+              11C9 Geleximce Lê Trọng Tấn Hà Đông - Hà Nội
+            </div>
+            <div
+              class="header-top-more-info"
+              style="font-weight: 600; margin-left: 2rem"
+            >
+              HÀ NỘI
+            </div>
+            <div class="header-top-more-info" style="color: #4fba69">
+              0983006662
+            </div>
+          </a-space> -->
+        </a-col>
+        <a-col span="2">
+          <div style="float: right; margin-right: 2rem">
+            <a-button @click="goAdmin" size="large" type="text">
+              <template #icon><UserOutlined /></template>
+            </a-button>
+          </div>
+        </a-col>
+      </a-row>
+    </div>
     <div class="nav">
       <div class="nav-pc">
         <div class="navigation">
@@ -146,12 +182,6 @@ defineExpose({ getCategoryList });
               <template #icon><SearchOutlined /></template>
             </a-button>
           </a-input-group>
-        </div>
-
-        <div class="nav-cart">
-          <a-button @click="goAdmin" size="large" type="text">
-            <template #icon><UserOutlined /></template>
-          </a-button>
         </div>
 
         <a-button
@@ -238,7 +268,7 @@ defineExpose({ getCategoryList });
 
 .category-pc-list {
   text-decoration: none;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: var(--black-color);
   border-radius: 20px;
   padding: 5px;
@@ -415,6 +445,10 @@ defineExpose({ getCategoryList });
   display: block;
   border-bottom: 1px solid #ccc;
 }
+
+.header-top-more-info {
+  display: block;
+}
 /*  Mobile & Tablet */
 @media (max-width: 63.9375em) {
   .nav-category {
@@ -423,6 +457,10 @@ defineExpose({ getCategoryList });
 
   .nav-bars-btn {
     display: block;
+  }
+
+  .header-top-more-info {
+    display: none;
   }
 }
 
@@ -435,6 +473,10 @@ defineExpose({ getCategoryList });
   .nav-bars-btn {
     display: block;
   }
+
+  /* .header-top-more-info {
+    display: none;
+  } */
 }
 
 /* Tablet: min-width >= 740px and max-width < 1023px */
@@ -465,6 +507,10 @@ defineExpose({ getCategoryList });
 
   .nav-cart-icon {
     font-size: 2rem;
+  }
+
+  .header-top-more-info {
+    display: none;
   }
 }
 
