@@ -107,7 +107,7 @@ defineExpose({ getCategoryList });
           <a href="/" class="navigation-logo"
             ><img
               class="navigation-logo-img"
-              src="//theme.hstatic.net/200000072226/1000834016/14/logo.png?v=2933"
+              src="../assets/img/logo.png"
               alt="Đèn LED VN"
           /></a>
         </div>
@@ -234,8 +234,8 @@ defineExpose({ getCategoryList });
 
 .navigation-logo-img {
   width: 217px;
-  height: 65px;
-  object-fit: contain;
+  height: 70px;
+  object-fit: fill;
   max-height: 100%;
   text-decoration: none;
 }

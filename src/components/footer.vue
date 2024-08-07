@@ -14,7 +14,7 @@
             class="ls-is-cached lazyloaded"
             data-src="//theme.hstatic.net/200000072226/1000834016/14/ft_logo.png?v=2974"
             alt="Đèn LED - Đèn Trang trí - LED XANH"
-            src="//theme.hstatic.net/200000072226/1000834016/14/ft_logo.png?v=2974"
+            src="../assets/img/logo.png"
           />
         </div>
         <h3 class="mt-2">CÔNG TY CP THƯƠNG MẠI VÀ XÂY DỰNG 138 VIỆT NAM</h3>
@@ -99,5 +99,13 @@ import { FacebookFilled, YoutubeFilled } from "@ant-design/icons-vue";
   cursor: pointer;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
+}
+
+.ls-is-cached {
+  width: 217px;
+  height: 70px;
+  object-fit: fill;
+  max-height: 100%;
+  text-decoration: none;
 }
 </style>

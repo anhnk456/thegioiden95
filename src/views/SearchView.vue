@@ -20,6 +20,7 @@
       <div style="display: flex; justify-content: center; margin: 30px 0">
         <a-pagination
           v-model:current="current"
+          :showSizeChanger="false"
           :total="total"
           :pageSize="size"
           @change="handleChangePage"
