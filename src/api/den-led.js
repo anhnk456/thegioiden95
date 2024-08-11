@@ -1,35 +1,44 @@
 import axios from "axios";
 
+import { convertURLParams } from "@/until/format";
+
 const URL = "https://the-gioi-den.up.railway.app/";
 
 const API = {
+  // API Sản phẩm
   get_all_sp: "get-all-sp",
-  get_all_dm: "get-all-danh-muc",
   get_sp_by_dm: "get-all-sp-by-danh-muc",
-  get_all_tm: "get-all-thu-muc",
-  get_all_tm_by_dm: "get-all-danh-muc-by-thu-muc",
-  search: "search",
   detail_product: "detail",
+  them_sp: "them-moi-sp",
+  sua_sp: "sua-san-pham",
+  xoa_sp: "xoa-san-pham",
+  // API Danh mục
+  get_all_dm: "get-all-danh-muc",
+  search: "search",
   add_dm: "them-moi-danh-muc",
   sua_dm: "sua-danh-muc",
   xoa_dm: "xoa-danh-muc",
-  xoa_sp: "xoa-san-pham",
-  them_sp: "them-moi-sp",
-  sua_sp: "sua-san-pham",
+  // API Thư mục lớn
+  get_all_tm: "get-all-thu-muc",
+  get_all_tm_by_dm: "get-all-danh-muc-by-thu-muc",
   add_tm: "them-thu-muc",
   sua_tm: "sua-thu-muc",
   xoa_tm: "xoa-thu-muc",
-  them_bn: "them-moi-banner",
+  // API Ảnh khuyến mãi
   get_bn: "get-all-banner",
+  them_bn: "them-moi-banner",
   xoa_bn: "xoa-banner",
-};
-
-const convertURLParams = (params) => {
-  return Object.keys(params)
-    .map(function (key) {
-      return key + "=" + params[key];
-    })
-    .join("&");
+  // API sắp xếp theo thứ tự ưu tiên
+  uu_tien_sp: "uu-tien/san-pham",
+  uu_tien_dm: "uu-tien/danh-muc",
+  uu_tien_tm: "uu-tien/thu-muc",
+  uu_tien_tong_muc: "uu-tien/tong-muc",
+  // API Tổng mục
+  get_all_tong_muc: "get-all-tong-muc",
+  get_all_tong_muc_child: "get-all-tong-muc-child",
+  them_tong_muc: "them-tong-muc",
+  sua_tong_muc: "sua-tong-muc",
+  xoa_tong_muc: "xoa-tong-muc",
 };
 
 export const getAllSp = async (params) => {
@@ -84,6 +93,18 @@ export const detailProduct = async (params) => {
   const res = await axios.get(
     `${URL}${API.detail_product}?${convertURLParams(params)}`
   );
+
+  return res;
+};
+
+export const getAllTongMuc = async () => {
+  const res = await axios.get(`${URL}${API.get_all_tong_muc}`);
+
+  return res;
+};
+
+export const getAllTongMucChild = async () => {
+  const res = await axios.get(`${URL}${API.get_all_tong_muc_child}`);
 
   return res;
 };
@@ -150,6 +171,48 @@ export const editCategory = async (data) => {
 
 export const deleteCategory = async (id) => {
   const res = await axios.delete(`${URL}${API.xoa_dm}?id=${id}`);
+
+  return res;
+};
+
+export const addPriority = async (data) => {
+  const res = await axios.post(`${URL}${API.them_tong_muc}`, data);
+
+  return res;
+};
+
+export const editPriority = async (data) => {
+  const res = await axios.put(`${URL}${API.sua_tong_muc}`, data);
+
+  return res;
+};
+
+export const deletePriority = async (id) => {
+  const res = await axios.delete(`${URL}${API.xoa_tong_muc}?id=${id}`);
+
+  return res;
+};
+
+export const uuTienSanPham = async (data) => {
+  const res = await axios.put(`${URL}${API.uu_tien_sp}`, data);
+
+  return res;
+};
+
+export const uuTienDanhMuc = async (data) => {
+  const res = await axios.put(`${URL}${API.uu_tien_dm}`, data);
+
+  return res;
+};
+
+export const uuTienThuMuc = async (data) => {
+  const res = await axios.put(`${URL}${API.uu_tien_tm}`, data);
+
+  return res;
+};
+
+export const uuTienTongMuc = async (data) => {
+  const res = await axios.put(`${URL}${API.uu_tien_tong_muc}`, data);
 
   return res;
 };

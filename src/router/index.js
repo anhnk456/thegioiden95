@@ -44,6 +44,11 @@ const router = createRouter({
       name: "AddBanner",
       component: () => import("../views/AddBanner.vue"),
     },
+    {
+      path: "/add-priority",
+      name: "AddPriority",
+      component: () => import("../views/AddPriority.vue"),
+    },
   ],
 });
 

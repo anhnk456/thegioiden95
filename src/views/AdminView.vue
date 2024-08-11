@@ -6,6 +6,7 @@
       <a-button @click="onAddCategory">Quản lý danh mục</a-button>
       <a-button @click="onAddImg">Quản lý sản phẩm</a-button>
       <a-button @click="onAddBanner">Quản lý Banner</a-button>
+      <a-button @click="onAddPriority">Mức độ ưu tiên</a-button>
     </a-space>
     <div v-else class="login-container">
       <h2>Đăng nhập</h2>
@@ -67,6 +68,10 @@ const onAddBanner = () => {
 
 const onAddCategoryParent = () => {
   router.push("/add-category-parent");
+};
+
+const onAddPriority = () => {
+  router.push("/add-priority");
 };
 
 const submitLogin = () => {
