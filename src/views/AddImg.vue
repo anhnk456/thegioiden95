@@ -384,7 +384,7 @@ const submit = async () => {
 };
 
 const handleChangePage = async (page, pageSize) => {
-  formSearch.page = page;
+  formSearch.page = page - 1;
   formSearch.pageSize = pageSize;
   await fetch();
 };

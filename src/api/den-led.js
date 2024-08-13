@@ -39,6 +39,14 @@ const API = {
   them_tong_muc: "them-tong-muc",
   sua_tong_muc: "sua-tong-muc",
   xoa_tong_muc: "xoa-tong-muc",
+  // API Trang chủ
+  trang_chu: "trang-chu",
+};
+
+export const getTrangChu = async () => {
+  const res = await axios.get(`${URL}${API.trang_chu}`);
+
+  return res;
 };
 
 export const getAllSp = async (params) => {

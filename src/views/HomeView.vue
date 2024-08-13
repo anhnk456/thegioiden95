@@ -3,14 +3,15 @@ import { onMounted, ref, computed } from "vue";
 
 import HeaderVue from "@/components/header.vue";
 import CarouselVue from "@/components/carousel.vue";
-// import Category from "@/components/category.vue";
+import Category from "@/components/category.vue";
 import FooterVue from "@/components/footer.vue";
 import AboutVue from "@/components/about.vue";
-import { getAllDanhMuc, getAllSp } from "@/api/den-led.js";
+import { getTrangChu, getAllSp } from "@/api/den-led.js";
 import Products from "@/components/products.vue";
 
 const loading = ref(false);
 const dataSearch = ref([]);
+const categoryList = ref([]);
 const current = ref(1);
 const size = ref(36);
 
@@ -36,12 +37,14 @@ const handleChangePage = async () => {
 
 onMounted(async () => {
   try {
-    loading.value = false;
-    const { data } = await getAllSp({
+    loading.value = true;
+    const res1 = await getAllSp({
       page: 0,
       size: size.value,
     });
-    dataSearch.value = data;
+    const res2 = await getTrangChu();
+    dataSearch.value = res1.data;
+    categoryList.value = res2.data;
   } catch (error) {
     console.log(error);
   } finally {
@@ -54,12 +57,12 @@ onMounted(async () => {
   <div>
     <HeaderVue />
     <CarouselVue />
-    <!-- <Category
+    <Category
       v-for="(item, index) in categoryList"
       :key="index"
-      :category-id="item.id"
-      :category-name="item.tenDanhMuc"
-    /> -->
+      :category-name="item.danhMucSanPham?.tenDanhMuc"
+      :product-list="item.listSanPham"
+    />
     <a-spin :spinning="loading">
       <div class="wrapper">
         <div class="product">

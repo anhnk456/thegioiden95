@@ -15,23 +15,18 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
-
-import { getSpByDm } from "@/api/den-led.js";
 import { useRouter } from "vue-router";
 
 import Products from "./products.vue";
 
 const router = useRouter();
 
-const productList = ref();
-
 const props = defineProps({
   categoryName: {
     type: String,
     default: "Đèn Led",
   },
-  categoryId: {
+  productList: {
     type: Number,
     default: undefined,
   },
@@ -40,22 +35,6 @@ const props = defineProps({
 const goSearchSpByDm = (id, name) => {
   router.push({ path: "/search", query: { id, name } });
 };
-
-watch(
-  () => props.categoryId,
-  async (value) => {
-    if (value) {
-      const params = {
-        page: 0,
-        size: 10,
-        idDanhMuc: value,
-      };
-      const res = await getSpByDm(params);
-      productList.value = res.data.splice(0, 4);
-    }
-  },
-  { immediate: true }
-);
 </script>
 
 <style scoped>
