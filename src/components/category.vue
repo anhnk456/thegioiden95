@@ -30,6 +30,10 @@ const props = defineProps({
     type: Number,
     default: undefined,
   },
+  categoryId: {
+    type: Number,
+    default: undefined,
+  },
 });
 
 const goSearchSpByDm = (id, name) => {

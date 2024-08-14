@@ -13,7 +13,7 @@
           <img
             class="ls-is-cached lazyloaded"
             data-src="//theme.hstatic.net/200000072226/1000834016/14/ft_logo.png?v=2974"
-            alt="Đèn LED - Đèn Trang trí - DVC-LED"
+            alt="Đèn LED - Đèn Trang trí - VDC-LED"
             src="../assets/img/logo.png"
           />
         </div>

@@ -1,11 +1,11 @@
 <template>
   <a-spin :spinning="loading">
     <Header ref="headerRef" />
-    <div class="result-search">
+    <div v-if="route.query?.value" class="result-search">
       <h3 style="font-size: 2rem">Kết quả tìm kiếm</h3>
       <div style="margin-top: 20px">
         <h3 style="font-size: 2rem">
-          Tất cả / {{ route.query?.value ? "Từ khóa" : "Danh mục" }} :
+          Tất cả / Từ khóa :
           {{ route.query?.value || route.query?.name }}
         </h3>
       </div>
@@ -13,6 +13,12 @@
         <h3 style="font-size: 2rem">Không tìm thấy sản phẩm nào</h3>
       </div>
     </div>
+    <a-breadcrumb v-else style="background-color: #e5e5e5">
+      <a-breadcrumb-item style="padding-left: 60px"
+        ><a href="/">Trang chủ</a></a-breadcrumb-item
+      >
+      <a-breadcrumb-item>{{ categoryName }}</a-breadcrumb-item>
+    </a-breadcrumb>
     <div class="wrapper">
       <div class="product">
         <Products is-search :product-list="dataSearch" />
@@ -47,6 +53,7 @@ const current = ref(1);
 const size = ref(24);
 const headerRef = ref();
 const loading = ref(false);
+const categoryName = ref();
 
 const dataSearch = ref([]);
 
@@ -77,7 +84,8 @@ const handleChangePage = async () => {
 watch(
   () => route.query,
   async (query) => {
-    const { value, id } = query;
+    const { value, id, name } = query;
+    categoryName.value = name;
     const params = {
       page: current.value - 1,
       size: size.value,

@@ -61,9 +61,10 @@ onMounted(async () => {
       v-for="(item, index) in categoryList"
       :key="index"
       :category-name="item.danhMucSanPham?.tenDanhMuc"
+      :category-id="item.danhMucSanPham?.id"
       :product-list="item.listSanPham"
     />
-    <a-spin :spinning="loading">
+    <!-- <a-spin :spinning="loading">
       <div class="wrapper">
         <div class="product">
           <Products is-search :product-list="dataSearch" />
@@ -78,7 +79,7 @@ onMounted(async () => {
           />
         </div>
       </div>
-    </a-spin>
+    </a-spin> -->
     <AboutVue />
     <FooterVue />
   </div>

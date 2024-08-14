@@ -164,7 +164,7 @@ onMounted(async () => {
 
 <style scoped>
 .product {
-  padding: 0 60px;
+  padding: 0 220px;
 }
 .product-title {
   margin-top: 20px;
