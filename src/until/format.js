@@ -16,3 +16,20 @@ export const convertURLParams = (params) => {
     })
     .join("&");
 };
+
+export const formatBreadcrumb = (data) => {
+  if (!data) return [];
+
+  const keys = [
+    { id: "idTongMuc", name: "tenTongMuc", type: "TONG_MUC" },
+    { id: "idThuMuc", name: "tenThuMuc", type: "THU_MUC" },
+    { id: "idDanhMuc", name: "tenDanhMuc", type: "DANH_MUC" },
+  ];
+
+  return keys.reduce((acc, { id, name, type }) => {
+    if (data[id]) {
+      acc.push({ id: data[id], name: data[name], type });
+    }
+    return acc;
+  }, []);
+};

@@ -1,6 +1,19 @@
 <template>
   <div style="padding-bottom: 40px">
     <HeaderVue />
+    <a-breadcrumb style="background-color: #e5e5e5">
+      <a-breadcrumb-item style="padding-left: 60px"
+        ><a href="/">Trang chủ</a></a-breadcrumb-item
+      >
+      <a-breadcrumb-item v-for="(item, index) in listBreadcrumb" :key="index">
+        <a
+          v-if="item.type == 'DANH_MUC'"
+          @click="goSearchSpByDm(item.id, item.name)"
+          >{{ item.name }}</a
+        >
+        <span v-else>{{ item.name }}</span>
+      </a-breadcrumb-item>
+    </a-breadcrumb>
     <div class="product">
       <a-row :gutter="20" :span="24">
         <a-col :xl="12" :lg="12" :md="24" :sm="24" :xs="24">
@@ -128,7 +141,7 @@
 </template>
 
 <script setup>
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { computed, onMounted, ref } from "vue";
 
 import Category from "@/components/category.vue";
@@ -136,21 +149,28 @@ import HeaderVue from "@/components/header.vue";
 import FooterVue from "@/components/footer.vue";
 import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
 import { detailProduct } from "@/api/den-led.js";
-import { numberToVndCurrency } from "@/until/format";
+import { formatBreadcrumb, numberToVndCurrency } from "@/until/format";
 
 const route = useRoute();
+const router = useRouter();
 
 const idImage = computed(() => route.query.id);
 
 const listImgProduct = ref([]);
 const detailImg = ref();
+const listBreadcrumb = ref([]);
 const value1 = ref();
 const value2 = ref();
 const openModal = ref(false);
 
+const goSearchSpByDm = (id, name) => {
+  router.push({ path: "/search", query: { id, name } });
+};
+
 onMounted(async () => {
   const res = await detailProduct({ id: idImage.value });
   detailImg.value = res.data.sanPham;
+  listBreadcrumb.value = formatBreadcrumb(res.data);
 
   if (res.data.sanPham.linkAnhChinh) {
     listImgProduct.value.push(res.data.sanPham.linkAnhChinh);
