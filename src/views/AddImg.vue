@@ -167,9 +167,39 @@
           <a-form-item label="Công suất" name="congSuat">
             <a-input v-model:value="formAdd.congSuat" />
           </a-form-item>
-          <a-form-item label="Ánh sáng" name="anhSang">
-            <a-input v-model:value="formAdd.anhSang" />
+          <a-form-item label="Giá công suất" name="giaCongSuat">
+            <a-input v-model:value="formAdd.giaCongSuat" />
           </a-form-item>
+          <a-form-item label="Kích thước" name="kichThuoc">
+            <a-row :gutter="10" span="24">
+              <a-col span="20">
+                <a-input v-model:value="formAdd.kichThuoc"
+              /></a-col>
+              <a-col span="4">
+                <a-button
+                  :disabled="listDynamic.length > 0"
+                  type="dashed"
+                  block
+                  @click="addDynamic"
+                >
+                  <PlusOutlined /> </a-button
+              ></a-col>
+            </a-row>
+          </a-form-item>
+          <div
+            v-for="(item, index) in listDynamic"
+            :key="index"
+            style="margin-bottom: 20px; margin-left: 71px"
+          >
+            <a-row :gutter="10" span="24">
+              <a-col span="6"
+                ><a-input v-model:value="item.tenPhanLoai"> </a-input
+              ></a-col>
+              <a-col span="14"
+                ><a-input v-model:value="item.groupValue"> </a-input
+              ></a-col>
+            </a-row>
+          </div>
           <a-form-item label="Mô tả" name="moTa">
             <a-textarea v-model:value="formAdd.moTa" type="textarea" />
           </a-form-item>
@@ -190,7 +220,11 @@ import {
   message,
 } from "ant-design-vue";
 import { UploadOutlined } from "@ant-design/icons-vue";
-import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
+import {
+  LeftCircleOutlined,
+  RightCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons-vue";
 
 import Header from "@/components/header.vue";
 import {
@@ -207,6 +241,11 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 
+interface DynamicList {
+  tenPhanLoai?: string;
+  groupValue?: string;
+}
+
 const formAddInit = {
   id: "",
   danhMucSanPhamId: "",
@@ -221,7 +260,11 @@ const formAddInit = {
   gocChieu: "",
   chiSoHoanMau: "",
   hieuSuat: "",
+  giaCongSuat: "",
+  kichThuoc: "",
 };
+
+const listDynamic = ref<DynamicList[]>([]);
 
 const headerRef = ref();
 const formRef = ref();
@@ -271,6 +314,13 @@ const columns = [
   },
 ];
 
+const addDynamic = () => {
+  listDynamic.value.push({
+    tenPhanLoai: "",
+    groupValue: "",
+  });
+};
+
 const fetch = async () => {
   try {
     loadingTable.value = true;
@@ -303,6 +353,7 @@ const onOpen = () => {
     ...formAddInit,
   };
   listImgProduct.value = [];
+  listDynamic.value = [];
 };
 
 const onClose = () => {
@@ -327,22 +378,88 @@ const onEdit = async (record) => {
 
   open.value = true;
   listImgProduct.value = [];
-  const res = await detailProduct({ id: record.id });
-  formAdd.value = res.data.sanPham;
+  listDynamic.value = [];
+  try {
+    loadingDrawer.value = true;
+    const res = await detailProduct({ id: record.id });
+    formAdd.value = res.data.sanPham;
 
-  if (res.data.sanPham.linkAnhChinh) {
-    listImgProduct.value.push(res.data.sanPham.linkAnhChinh);
+    if (res.data.listCongSuat.length > 0) {
+      formAdd.value.giaCongSuat = res.data.listCongSuat
+        .map((item) => item.giaTien)
+        .join("-");
+    }
+
+    if (res.data.listDynamic.length > 0) {
+      const list = res.data.listDynamic;
+
+      listDynamic.value.push({
+        tenPhanLoai: list[0].tenPhanLoai,
+        groupValue: list.map((item) => item.groupValue).join("-"),
+      });
+    }
+
+    if (res.data.sanPham.linkAnhChinh) {
+      listImgProduct.value.push(res.data.sanPham.linkAnhChinh);
+    }
+    if (res.data.listAnh) {
+      const listAnhFilter = res.data.listAnh.map((item) => item.linkAnh);
+      listImgProduct.value = [...listImgProduct.value, ...listAnhFilter];
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    loadingDrawer.value = false;
   }
-  if (res.data.listAnh) {
-    const listAnhFilter = res.data.listAnh.map((item) => item.linkAnh);
-    listImgProduct.value = [...listImgProduct.value, ...listAnhFilter];
+};
+
+const getListPhanLoai = (value) => {
+  if (!value) return;
+
+  const congSuatList = value.congSuat?.split("-") || [];
+  const giaCongSuatList = value.giaCongSuat?.split("-") || [];
+  const kichThuocList = value.kichThuoc?.split("-") || [];
+  const dynamicList = listDynamic.value[0]?.groupValue?.split("-") || [];
+
+  if (congSuatList.length !== giaCongSuatList.length) {
+    return false;
   }
+
+  return {
+    listCongSuat: congSuatList.map((item, index) => {
+      return {
+        tenPhanLoai: "congSuat",
+        groupValue: item.trim(),
+        giaTien: giaCongSuatList[index].trim(),
+      };
+    }),
+    listKichThuoc: kichThuocList.map((item) => {
+      return {
+        tenPhanLoai: "kichThuoc",
+        groupValue: item.trim(),
+      };
+    }),
+    listDynamic: dynamicList.map((item) => {
+      return {
+        tenPhanLoai: listDynamic.value[0]?.tenPhanLoai,
+        groupValue: item.trim(),
+      };
+    }),
+  };
 };
 
 const submit = async () => {
   try {
     await formRef.value.validate();
     loadingDrawer.value = true;
+
+    const phanLoaiList = getListPhanLoai(formAdd.value);
+
+    if (!phanLoaiList) {
+      message.success("Công suất và giá tiến công suất phải tương ứng");
+      return;
+    }
+
     if (formAdd.value.id) {
       const listAnhFilter = listImgProduct.value.map((item) => {
         return {
@@ -355,6 +472,7 @@ const submit = async () => {
           linkAnhChinh: listAnhFilter[0].linkAnh,
         },
         listAnh: listAnhFilter.slice(1),
+        ...phanLoaiList,
       };
       await editProduct(bodyRequest);
       message.success("Sửa sản phẩm thành công");
@@ -370,6 +488,7 @@ const submit = async () => {
           linkAnhChinh: listAnhFilter[0].linkAnh,
         },
         listAnh: listAnhFilter.slice(1),
+        ...phanLoaiList,
       };
       await addProduct(bodyRequest);
       message.success("Thêm mới sản phẩm thành công");
