@@ -27,7 +27,7 @@ const props = defineProps({
     default: "Đèn Led",
   },
   productList: {
-    type: Number,
+    type: Array,
     default: undefined,
   },
   categoryId: {

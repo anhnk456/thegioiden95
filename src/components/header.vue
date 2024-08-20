@@ -32,6 +32,7 @@ const handleSearch = () => {
 };
 
 const goSearchSpByDm = (id, name) => {
+  open.value = false;
   router.push({ path: "/search", query: { id, name } });
 };
 
@@ -195,19 +196,29 @@ defineExpose({ getCategoryList });
           </template>
         </a-button>
         <a-drawer v-model:open="open" title="" placement="right">
-          <div class="nav-mobile">
-            <a class="nav-mobile-content">Tất cả SP</a>
-            <a
-              v-for="item in categoryHeader"
-              :key="item.id"
-              class="nav-mobile-content"
-              @click="goSearchSpByDm(item.id, item.tenDanhMuc)"
-            >
-              {{ item.tenDanhMuc }}
-            </a>
-            <a class="nav-mobile-content">Câu hỏi</a>
-            <a class="nav-mobile-content">Chính sách</a>
-          </div>
+          <a-menu mode="inline">
+            <a-sub-menu key="sub1">
+              <template #title>TẤT CẢ SP</template>
+              <a-sub-menu
+                v-for="item in categoryListParentHeader"
+                :key="item.id"
+                :title="item.tenThuMuc"
+              >
+                <a-menu-item
+                  v-for="catagory in item.listDanhMuc"
+                  :key="catagory.id"
+                  @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
+                  >{{ catagory.tenDanhMuc }}
+                </a-menu-item>
+              </a-sub-menu>
+            </a-sub-menu>
+            <a-menu-item key="1">
+              <span>CÂU HỎI</span>
+            </a-menu-item>
+            <a-menu-item key="2">
+              <span>CHÍNH SÁCH</span>
+            </a-menu-item>
+          </a-menu>
         </a-drawer>
       </div>
     </div>
