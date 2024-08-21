@@ -66,4 +66,13 @@ onMounted(async () => {
   height: 650px;
   object-fit: fill;
 }
+
+/*  Mobile & Tablet */
+@media (max-width: 63.9375em) {
+  .img-carousel {
+    width: 100%;
+    height: 250px;
+    object-fit: fill;
+  }
+}
 </style>

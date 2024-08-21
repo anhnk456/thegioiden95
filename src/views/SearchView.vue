@@ -125,4 +125,11 @@ watch(
   width: 100%;
   margin-bottom: 60px;
 }
+
+@media (max-width: 63.9375em) {
+  .wrapper {
+    padding: 0;
+    margin-top: 60px;
+  }
+}
 </style>

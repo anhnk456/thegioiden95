@@ -58,4 +58,11 @@ const goSearchSpByDm = (id, name) => {
   background: #f5f7fd;
   border-radius: 10px;
 }
+
+@media (max-width: 63.9375em) {
+  .wrapper {
+    padding: 0;
+    margin-top: 60px;
+  }
+}
 </style>

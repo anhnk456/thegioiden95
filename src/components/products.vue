@@ -6,9 +6,9 @@
       :key="index"
       :xl="4"
       :lg="6"
-      :md="12"
-      :sm="24"
-      :xs="24"
+      :md="8"
+      :sm="12"
+      :xs="12"
     >
       <div>
         <img
@@ -20,6 +20,14 @@
       </div>
       <div class="productTitle">
         {{ item.tenSanPham }}
+      </div>
+      <div style="margin: 1rem" v-if="listCongSuat(item.congSuat)">
+        <a-tag
+          v-for="(item, index) in listCongSuat(item.congSuat)"
+          :key="index"
+        >
+          {{ item }}</a-tag
+        >
       </div>
       <div class="productPrice">
         <span class="current-price">{{ numberToVndCurrency(item.giaSp) }}</span>
@@ -49,6 +57,14 @@
       <div class="productTitle">
         {{ item.tenSanPham }}
       </div>
+      <div style="margin: 1rem" v-if="listCongSuat(item.congSuat)">
+        <a-tag
+          v-for="(item, index) in listCongSuat(item.congSuat)"
+          :key="index"
+        >
+          {{ item }}</a-tag
+        >
+      </div>
       <div class="productPrice">
         <span class="current-price">{{ numberToVndCurrency(item.giaSp) }}</span>
       </div>
@@ -58,7 +74,7 @@
 
 <script setup>
 import { numberToVndCurrency } from "@/until/format";
-import { computed, ref, watch } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -67,6 +83,12 @@ const props = defineProps({
   productList: Array,
   isSearch: Boolean,
 });
+
+const listCongSuat = (value) => {
+  if (!value) return [];
+
+  return value.split("-");
+};
 
 const goDetailSp = (id) => {
   router.push({ path: "/detail", query: { id } });

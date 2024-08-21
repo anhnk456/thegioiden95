@@ -86,8 +86,8 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.wrapper {
+/* .wrapper {
   padding: 0 60px;
   margin-top: 60px;
-}
+} */
 </style>

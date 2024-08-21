@@ -1,6 +1,6 @@
 <template>
-  <a-typography style="padding: 20px 60px">
-    <a-typography-title align="center"
+  <a-typography class="wrapper">
+    <a-typography-title class="title" align="center"
       >Giới thiệu về VDC Led</a-typography-title
     >
     <a-typography-paragraph>
@@ -21,3 +21,18 @@
 </template>
 
 <script setup></script>
+
+<style scoped>
+.wrapper {
+  padding: 20px 60px;
+}
+
+@media (max-width: 63.9375em) {
+  .title {
+    font-size: 2.5rem;
+  }
+  .wrapper {
+    padding: 20px 0px;
+  }
+}
+</style>

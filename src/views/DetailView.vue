@@ -247,7 +247,7 @@ onMounted(async () => {
 
 <style scoped>
 .product {
-  padding: 0 220px;
+  padding: 0 60px;
 }
 .product-title {
   margin-top: 20px;
@@ -305,5 +305,11 @@ onMounted(async () => {
   width: 100%;
   max-height: 80vh;
   object-fit: contain;
+}
+
+@media (max-width: 63.9375em) {
+  .product {
+    padding: 0 1rem;
+  }
 }
 </style>

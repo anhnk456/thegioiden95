@@ -17,7 +17,9 @@
             src="../assets/img/logo.png"
           />
         </div>
-        <h3 class="mt-2">CÔNG TY CP THƯƠNG MẠI VÀ XÂY DỰNG 138 VIỆT NAM</h3>
+        <h3 class="mt-2 title">
+          CÔNG TY CP THƯƠNG MẠI VÀ XÂY DỰNG 138 VIỆT NAM
+        </h3>
         <div class="mt-2">
           <a-space>
             <h3>Địa chỉ:</h3>
@@ -33,7 +35,7 @@
       </a-col>
       <a-col :xl="12" :lg="12" :md="24" :sm="24" :xs="24">
         <a-row>
-          <a-col span="12">
+          <a-col :xl="12" :lg="12" :md="24" :sm="24" :xs="24">
             <h3 style="font-size: 2rem">Chính sách & Quy định</h3>
             <div class="policy">Chính sách đổi trả</div>
             <div class="policy">Chính sách bảo hành</div>
@@ -42,7 +44,7 @@
             <div class="policy">Hướng dẫn mua hàng</div>
             <div class="policy">Kinh nghiệm mua hàng</div>
           </a-col>
-          <a-col span="12">
+          <a-col :xl="12" :lg="12" :md="24" :sm="24" :xs="24">
             <h3 style="font-size: 2rem">Theo dõi chúng tôi trên</h3>
             <div>
               <a-space>
@@ -107,5 +109,24 @@ import { FacebookFilled, YoutubeFilled } from "@ant-design/icons-vue";
   object-fit: fill;
   max-height: 100%;
   text-decoration: none;
+}
+
+@media (max-width: 63.9375em) {
+  .wrapper {
+    margin-top: 4rem;
+    padding: 0 1rem;
+    margin-bottom: 2rem;
+  }
+  .ls-is-cached {
+    width: 340px;
+    height: 70px;
+    object-fit: fill;
+    max-height: 100%;
+    text-decoration: none;
+  }
+  .title {
+    font-weight: 500;
+    font-size: 1.3rem;
+  }
 }
 </style>
