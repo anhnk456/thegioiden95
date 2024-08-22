@@ -18,19 +18,18 @@
       <div class="product">
         <a-row :gutter="20" :span="24">
           <a-col :xl="12" :lg="12" :md="24" :sm="24" :xs="24">
-            <a-carousel style="margin-top: 2rem" arrows>
-              <template #prevArrow>
-                <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
-                  <left-circle-outlined />
-                </div>
+            <a-carousel
+              style="margin-top: 2rem"
+              arrows
+              dots-class="slick-dots slick-thumb"
+            >
+              <template #customPaging="props">
+                <a>
+                  <img :src="getImgUrl(props.i)" />
+                </a>
               </template>
-              <template #nextArrow>
-                <div class="custom-slick-arrow" style="right: 10px">
-                  <right-circle-outlined />
-                </div>
-              </template>
-              <div v-for="(item, index) in listImgProduct" :key="index">
-                <img class="img-carousel" :src="item" alt="" />
+              <div v-for="(image, index) in listImgProduct" :key="index">
+                <img :src="image" />
               </div>
             </a-carousel>
           </a-col>
@@ -161,12 +160,11 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 
 import Category from "@/components/category.vue";
 import HeaderVue from "@/components/header.vue";
 import FooterVue from "@/components/footer.vue";
-import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
 import { detailProduct } from "@/api/den-led.js";
 import { formatBreadcrumb, numberToVndCurrency } from "@/until/format";
 
@@ -183,6 +181,10 @@ const detailImg = ref();
 const listBreadcrumb = ref([]);
 const openModal = ref(false);
 const loading = ref(false);
+
+const getImgUrl = (i) => {
+  return listImgProduct.value[i];
+};
 
 const goSearchSpByDm = (id, name) => {
   router.push({ path: "/search", query: { id, name } });
@@ -247,7 +249,7 @@ onMounted(async () => {
 
 <style scoped>
 .product {
-  padding: 0 60px;
+  padding: 0 120px;
 }
 .product-title {
   margin-top: 20px;
@@ -277,28 +279,34 @@ onMounted(async () => {
   border-radius: 10%;
 }
 
-:deep(.slick-slide) {
-  text-align: center;
-  background: white;
-  overflow: hidden;
+:deep(.slick-dots) {
+  position: relative;
+  height: auto;
 }
-
-:deep(.slick-arrow.custom-slick-arrow) {
-  width: 25px;
-  height: 25px;
-  font-size: 25px;
-  color: rgb(68, 66, 66);
-  background-color: rgba(31, 45, 61, 0.11);
-  transition: ease all 0.3s;
-  opacity: 0.3;
-  z-index: 1;
+:deep(.slick-slide img) {
+  border: 5px solid #fff;
+  display: block;
+  margin: auto;
+  max-width: 80%;
 }
-:deep(.slick-arrow.custom-slick-arrow:before) {
-  display: none;
+:deep(.slick-arrow) {
+  display: none !important;
 }
-:deep(.slick-arrow.custom-slick-arrow:hover) {
-  color: #1e1d1d;
-  opacity: 0.5;
+:deep(.slick-thumb) {
+  bottom: 0px;
+}
+:deep(.slick-thumb li) {
+  width: 60px;
+  height: 45px;
+}
+:deep(.slick-thumb li img) {
+  width: 100%;
+  height: 100%;
+  filter: grayscale(100%);
+  display: block;
+}
+:deep .slick-thumb li.slick-active img {
+  filter: grayscale(0%);
 }
 
 .img-carousel {
@@ -310,6 +318,15 @@ onMounted(async () => {
 @media (max-width: 63.9375em) {
   .product {
     padding: 0 1rem;
+  }
+  .product-title {
+    margin-top: 40px;
+  }
+  :deep(.slick-slide img) {
+    border: 5px solid #fff;
+    display: block;
+    margin: auto;
+    max-width: 95%;
   }
 }
 </style>
