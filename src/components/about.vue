@@ -32,7 +32,7 @@
     font-size: 2.5rem;
   }
   .wrapper {
-    padding: 20px 0px;
+    padding: 20px 1rem;
   }
 }
 </style>

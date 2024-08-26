@@ -55,7 +55,7 @@
                   {{ numberToVndCurrency(detailImg?.giaSp) }}
                 </div>
                 <!-- <div class="product-price-original">{{ detailImg?.giaSp }}</div> -->
-                <div class="product-price-percent">(Đã bao gồm VAT)</div>
+                <!-- <div class="product-price-percent">(Đã bao gồm VAT)</div> -->
               </a-space>
             </div>
             <div class="mt-2">
@@ -83,7 +83,7 @@
               </div>
             </div>
             <a-space class="mt-4">
-              <h3>Công suất</h3>
+              <h3>{{ listCongSuat[0]?.tenPhanLoai || "Công suất" }}</h3>
               <button
                 v-for="(item, index) in listCongSuat"
                 :key="index"
@@ -94,7 +94,7 @@
             </a-space>
             <div />
             <a-space class="mt-2">
-              <h3>Kích thước</h3>
+              <h3>{{ listKichThuoc[0]?.tenPhanLoai || "Kích thước" }}</h3>
               <button v-for="(item, index) in listKichThuoc" :key="index">
                 {{ item?.groupValue }}
               </button>

@@ -200,7 +200,7 @@ defineExpose({ getCategoryList });
             <a-sub-menu key="sub1">
               <template #title>TẤT CẢ SP</template>
               <a-sub-menu
-                v-for="item in categoryListParentHeader"
+                v-for="item in categoryListParent"
                 :key="item.id"
                 :title="item.tenThuMuc"
               >
