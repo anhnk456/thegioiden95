@@ -23,6 +23,16 @@
               arrows
               dots-class="slick-dots slick-thumb"
             >
+              <template #prevArrow>
+                <div class="custom-slick-arrow" style="left: 10px; z-index: 1">
+                  <left-circle-outlined />
+                </div>
+              </template>
+              <template #nextArrow>
+                <div class="custom-slick-arrow" style="right: 10px">
+                  <right-circle-outlined />
+                </div>
+              </template>
               <template #customPaging="props">
                 <a>
                   <img :src="getImgUrl(props.i)" />
@@ -167,6 +177,7 @@ import HeaderVue from "@/components/header.vue";
 import FooterVue from "@/components/footer.vue";
 import { detailProduct } from "@/api/den-led.js";
 import { formatBreadcrumb, numberToVndCurrency } from "@/until/format";
+import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -289,9 +300,9 @@ onMounted(async () => {
   margin: auto;
   max-width: 80%;
 }
-:deep(.slick-arrow) {
+/* :deep(.slick-arrow) {
   display: none !important;
-}
+} */
 :deep(.slick-thumb) {
   bottom: 0px;
 }
@@ -307,6 +318,23 @@ onMounted(async () => {
 }
 :deep .slick-thumb li.slick-active img {
   filter: grayscale(0%);
+}
+:deep(.slick-arrow.custom-slick-arrow) {
+  width: 25px;
+  height: 25px;
+  font-size: 25px;
+  color: black;
+  background-color: rgba(31, 45, 61, 0.11);
+  transition: ease all 0.3s;
+  opacity: 0.3;
+  z-index: 1;
+}
+:deep(.slick-arrow.custom-slick-arrow:before) {
+  display: none;
+}
+:deep(.slick-arrow.custom-slick-arrow:hover) {
+  color: black;
+  opacity: 0.5;
 }
 
 .img-carousel {
