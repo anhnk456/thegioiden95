@@ -340,11 +340,7 @@ const fetch = async () => {
 };
 
 const getTenDanhMuc = (maDanhMuc) => {
-  if (!categoryList.value.length) {
-    categoryList.value = headerRef.value.getCategoryList();
-  }
-
-  return categoryList.value.find((item) => (item.id = maDanhMuc))?.tenDanhMuc;
+  return categoryList.value.find((item) => (item.id === maDanhMuc))?.tenDanhMuc;
 };
 
 const onOpen = () => {
@@ -562,6 +558,10 @@ const deteleImg = () => {
 
 onMounted(async () => {
   await fetch();
+
+  setTimeout(() => {
+    categoryList.value = headerRef.value.getCategoryList();
+  }, 100);
 });
 </script>
 

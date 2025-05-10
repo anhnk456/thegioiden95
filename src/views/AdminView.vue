@@ -79,10 +79,11 @@ const submitLogin = () => {
 
   if (username !== "root" && password !== "Abc@12345") {
     message.error("Sai tài khoản hoặc mật khẩu");
+  } else {
+    message.success("Đăng nhập thành công");
+    isAdmin.value = true;
+    localStorage.setItem("login", "true");
   }
-  message.success("Đăng nhập thành công");
-  isAdmin.value = true;
-  localStorage.setItem("login", "true");
 };
 
 onMounted(() => {

@@ -41,7 +41,7 @@ const goAdmin = () => {
 };
 
 const getCategoryList = () => {
-  return categoryList.value;
+  return JSON.parse(JSON.stringify(categoryList.value));
 };
 
 onMounted(async () => {
