@@ -117,37 +117,52 @@
               </button>
             </a-space>
             <div />
-            <a-space class="product-amout mt-2">
+            <div class="product-quantity mt-2">
               <h3>Số lượng</h3>
-              <a-input-number class="radio-btn" :min="1" :max="100" />
-              <a style="margin-left: 2rem"
-                >Click vào đây để tính toán số lượng đèn</a
+              <a-space>
+                <a-input-number 
+                  v-model:value="quantity"
+                  :min="1" 
+                  :max="100"
+                  size="large"
+                />
+                <a class="calculator-link">Click vào đây để tính toán số lượng đèn</a>
+              </a-space>
+            </div>
+            <div class="product-actions mt-4">
+              <a-button
+                size="large"
+                type="primary"
+                @click="addToCart"
+                :loading="loading"
+                class="cart-button"
               >
-            </a-space>
-            <div />
-            <div style="padding: 0 20px" class="product-btn mt-4">
-              <div>
-                <a-button
-                  size="large"
-                  type="primary"
-                  style="width: 49%; margin-right: 2%"
-                  >Thêm vào giỏ hàng</a-button
-                >
-                <a-button size="large" type="primary" danger style="width: 49%"
-                  >Mua ngay</a-button
-                >
-              </div>
-              <div style="margin-top: 2rem">
-                <a-button
-                  @click="() => (openModal = true)"
-                  size="large"
-                  style="width: 49%; margin-right: 2%"
-                  >Mô tả sản phẩm</a-button
-                >
-                <a-button size="large" style="width: 49%"
-                  >Thông số kỹ thuật</a-button
-                >
-              </div>
+                <shopping-cart-outlined />
+                Thêm vào giỏ hàng
+              </a-button>
+              <a-button 
+                size="large" 
+                type="primary" 
+                danger
+                class="buy-button"
+              >
+                Mua ngay
+              </a-button>
+            </div>
+            <div class="product-info-buttons mt-4">
+              <a-button
+                @click="() => (openModal = true)"
+                size="large"
+                class="info-button"
+              >
+                Mô tả sản phẩm
+              </a-button>
+              <a-button 
+                size="large"
+                class="info-button"
+              >
+                Thông số kỹ thuật
+              </a-button>
             </div>
           </a-col>
         </a-row>
@@ -177,10 +192,13 @@ import HeaderVue from "@/components/header.vue";
 import FooterVue from "@/components/footer.vue";
 import { detailProduct } from "@/api/den-led.js";
 import { formatBreadcrumb, numberToVndCurrency } from "@/until/format";
-import { LeftCircleOutlined, RightCircleOutlined } from "@ant-design/icons-vue";
+import { LeftCircleOutlined, RightCircleOutlined, ShoppingCartOutlined } from "@ant-design/icons-vue";
+import { useCartStore } from '@/store/cart';
+import { message } from 'ant-design-vue';
 
 const route = useRoute();
 const router = useRouter();
+const cartStore = useCartStore();
 
 const idImage = computed(() => route.query.id);
 
@@ -192,6 +210,7 @@ const detailImg = ref();
 const listBreadcrumb = ref([]);
 const openModal = ref(false);
 const loading = ref(false);
+const quantity = ref(1);
 
 const getImgUrl = (i) => {
   return listImgProduct.value[i];
@@ -203,6 +222,18 @@ const goSearchSpByDm = (id, name) => {
 
 const changeGiaSp = (item) => {
   detailImg.value.giaSp = item.giaSanPham;
+};
+
+const addToCart = () => {
+  if (detailImg.value) {
+    const productToAdd = {
+      ...detailImg.value,
+      quantity: quantity.value
+    };
+    cartStore.addToCart(productToAdd);
+    message.success('Đã thêm vào giỏ hàng');
+    cartStore.toggleCart();
+  }
 };
 
 onMounted(async () => {
@@ -356,5 +387,60 @@ onMounted(async () => {
     margin: auto;
     max-width: 95%;
   }
+}
+
+.product-quantity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.calculator-link {
+  color: #00a859;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.calculator-link:hover {
+  color: #008c4d;
+}
+
+.product-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.cart-button,
+.buy-button {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cart-button {
+  background: #00a859;
+}
+
+.cart-button:hover {
+  background: #008c4d;
+}
+
+.product-info-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.info-button {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
 }
 </style>

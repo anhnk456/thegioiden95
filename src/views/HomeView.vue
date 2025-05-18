@@ -17,6 +17,13 @@ const size = ref(36);
 
 const total = computed(() => dataSearch.value[0]?.totalElement || 0);
 
+// Thêm computed property để lọc các danh mục có sản phẩm
+const filteredCategories = computed(() => {
+  return categoryList.value.filter(item => {
+    return item.listSanPham && Array.isArray(item.listSanPham) && item.listSanPham.length > 0;
+  });
+});
+
 const handleChangePage = async () => {
   loading.value = true;
 
@@ -54,40 +61,110 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="home">
     <HeaderVue />
-    <CarouselVue />
-    <Category
-      v-for="(item, index) in categoryList"
-      :key="index"
-      :category-name="item.danhMucSanPham?.tenDanhMuc"
-      :category-id="item.danhMucSanPham?.id"
-      :product-list="item.listSanPham"
-    />
-    <!-- <a-spin :spinning="loading">
-      <div class="wrapper">
-        <div class="product">
-          <Products is-search :product-list="dataSearch" />
-        </div>
-        <div style="display: flex; justify-content: center; margin: 30px 0">
-          <a-pagination
-            v-model:current="current"
-            :showSizeChanger="false"
-            :total="total"
-            :pageSize="size"
-            @change="handleChangePage"
-          />
-        </div>
+    <div class="banner-container">
+      <CarouselVue />
+    </div>
+    <div class="main-content">
+      <div class="categories-container">
+        <Category
+          v-for="(item, index) in filteredCategories"
+          :key="index"
+          :category-name="item.danhMucSanPham?.tenDanhMuc"
+          :category-id="item.danhMucSanPham?.id"
+          :product-list="item.listSanPham"
+          class="category-section"
+        />
       </div>
-    </a-spin> -->
-    <AboutVue />
+      <AboutVue class="about-section" />
+    </div>
     <FooterVue />
   </div>
 </template>
 
 <style scoped>
-/* .wrapper {
-  padding: 0 60px;
-  margin-top: 60px;
-} */
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+.banner-container {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 15px;
+  margin-bottom: 20px;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 15px;
+  overflow-x: hidden;
+}
+
+.categories-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.category-section {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease forwards;
+  width: 100%;
+}
+
+.about-section {
+  margin-top: 30px;
+  padding: 40px;
+  border-radius: 12px;
+  background: linear-gradient(to right, #f8f9fa, #e9ecef);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+  .main-content {
+    max-width: 1200px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .main-content {
+    max-width: 960px;
+  }
+}
+
+@media (max-width: 992px) {
+  .main-content {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 0 8px;
+  }
+
+  .about-section {
+    margin: 40px 0;
+    padding: 24px;
+  }
+}
 </style>
