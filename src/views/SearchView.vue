@@ -50,7 +50,7 @@ import FooterVue from "@/components/footer.vue";
 const route = useRoute();
 
 const current = ref(1);
-const size = ref(24);
+const size = ref(20);
 const headerRef = ref();
 const loading = ref(false);
 const categoryName = ref();

@@ -3,7 +3,7 @@
     <button class="nav-button prev" @click="scrollLeft" :disabled="isAtStart">
       <left-outlined />
     </button>
-    <div class="products-grid" ref="productsGrid">
+    <div :class="['products-grid', { 'search-grid': isSearch }]" ref="productsGrid">
       <div
         v-for="(item, index) in productList"
         class="product-card"
@@ -429,5 +429,33 @@ const addToCart = (product) => {
     font-size: 11px;
     padding: 1px 6px;
   }
+}
+
+.search-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, auto);
+  gap: 20px;
+  overflow: visible;
+  width: 100%;
+}
+.search-grid .product-card {
+  width: 100%;
+  min-width: 0;
+}
+.search-grid .product-image-wrapper {
+  width: 100%;
+  height: 220px;
+  padding-top: 0;
+}
+.search-grid .product-image {
+  width: 100%;
+  height: 100%;
+}
+
+/* Ẩn nút scroll khi search */
+.search-grid ~ .nav-button.prev,
+.search-grid ~ .nav-button.next {
+  display: none !important;
 }
 </style>
