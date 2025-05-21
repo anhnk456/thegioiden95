@@ -42,7 +42,7 @@ import { ref, watch, computed } from "vue";
 
 import Header from "@/components/header.vue";
 import Products from "@/components/products.vue";
-import { search } from "@/api/den-led.js";
+import { search, getAllDanhMuc } from "@/api/den-led.js";
 
 import { useRoute } from "vue-router";
 import FooterVue from "@/components/footer.vue";
@@ -81,11 +81,25 @@ const handleChangePage = async () => {
   }
 };
 
+const fetchCategoryName = async (id) => {
+  try {
+    const res = await getAllDanhMuc();
+    const found = res.data.find((item) => item.id == id);
+    if (found) categoryName.value = found.tenDanhMuc;
+  } catch (e) {}
+};
+
 watch(
   () => route.query,
   async (query) => {
     const { value, id, name } = query;
-    categoryName.value = name;
+    if (name) {
+      categoryName.value = name;
+    } else if (id) {
+      await fetchCategoryName(id);
+    } else {
+      categoryName.value = '';
+    }
     const params = {
       page: current.value - 1,
       size: size.value,
