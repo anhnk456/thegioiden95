@@ -394,21 +394,50 @@ const addToCart = (product) => {
 }
 
 @media (max-width: 768px) {
-  .products-container {
-    padding: 0 10px;
-  }
-  .product-card {
-    flex: 0 0 calc(50% - 10px);
-    min-width: calc(50% - 10px);
-  }
+  /* Trang chủ: slider ngang 2 sản phẩm */
   .products-grid {
-    gap: 15px;
-    padding: 15px 0;
+    display: flex !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 10px;
+    width: 100%;
   }
-  .nav-button {
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
+  .products-grid .product-card {
+    min-width: 50vw !important;
+    max-width: 50vw !important;
+    scroll-snap-align: start;
+  }
+  /* Nút mũi tên chỉ hiện trên trang chủ */
+  .products-container:not(.search-mode) .nav-button {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .nav-button.prev { left: 4px !important; }
+  .nav-button.next { right: 4px !important; }
+
+  /* Trang search: lưới 2 cột, nhiều hàng */
+  .search-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+    width: 100%;
+    overflow-x: unset;
+    scroll-snap-type: none;
+  }
+  .search-grid .product-card {
+    width: 100% !important;
+    min-width: unset !important;
+    max-width: unset !important;
+    scroll-snap-align: unset;
+  }
+  /* Ẩn nút mũi tên khi là search */
+  .products-container.search-mode .nav-button {
+    display: none !important;
   }
   .product-info {
     min-height: 100px;
