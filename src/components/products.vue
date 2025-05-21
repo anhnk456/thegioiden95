@@ -487,4 +487,12 @@ const addToCart = (product) => {
 .search-grid ~ .nav-button.next {
   display: none !important;
 }
+
+/* Đảm bảo nút mũi tên luôn hiển thị trên desktop trang chủ */
+.products-container:not(.search-mode) .nav-button {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
 </style>
