@@ -1,6 +1,12 @@
 <template>
   <a-spin :spinning="loading">
     <Header ref="headerRef" />
+    <a-breadcrumb style="background-color: #e5e5e5; margin-bottom: 16px">
+      <a-breadcrumb-item style="padding-left: 60px">
+        <a href="/">Trang chủ</a>
+      </a-breadcrumb-item>
+      <a-breadcrumb-item v-if="categoryName">{{ categoryName }}</a-breadcrumb-item>
+    </a-breadcrumb>
     <div v-if="route.query?.value" class="result-search">
       <h3 style="font-size: 2rem">Kết quả tìm kiếm</h3>
       <div style="margin-top: 20px">
@@ -13,12 +19,6 @@
         <h3 style="font-size: 2rem">Không tìm thấy sản phẩm nào</h3>
       </div>
     </div>
-    <a-breadcrumb v-else style="background-color: #e5e5e5">
-      <a-breadcrumb-item style="padding-left: 60px"
-        ><a href="/">Trang chủ</a></a-breadcrumb-item
-      >
-      <a-breadcrumb-item>{{ categoryName }}</a-breadcrumb-item>
-    </a-breadcrumb>
     <div class="wrapper">
       <div class="product">
         <Products is-search :product-list="dataSearch" />
