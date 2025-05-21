@@ -98,22 +98,36 @@
                 v-for="(item, index) in listCongSuat"
                 :key="index"
                 @click="changeGiaSp(item)"
+                :class="['option-btn', { active: detailImg?.giaSp === item.giaSanPham }]"
               >
                 {{ item?.groupValue }}
+                <span v-if="detailImg?.giaSp === item.giaSanPham" class="tick"></span>
               </button>
             </a-space>
             <div />
             <a-space class="mt-2">
               <h3>{{ listKichThuoc[0]?.tenPhanLoai || "Kích thước" }}</h3>
-              <button v-for="(item, index) in listKichThuoc" :key="index">
+              <button
+                v-for="(item, index) in listKichThuoc"
+                :key="index"
+                :class="['option-btn', { active: selectedKichThuoc === item.groupValue }]"
+                @click="selectedKichThuoc = item.groupValue"
+              >
                 {{ item?.groupValue }}
+                <span v-if="selectedKichThuoc === item.groupValue" class="tick"></span>
               </button>
             </a-space>
             <div />
             <a-space v-if="listDynamic.length > 0" class="mt-2">
               <h3>{{ listDynamic[0]?.tenPhanLoai }}</h3>
-              <button v-for="(item, index) in listDynamic" :key="index">
+              <button
+                v-for="(item, index) in listDynamic"
+                :key="index"
+                :class="['option-btn', { active: selectedDynamic === item.groupValue }]"
+                @click="selectedDynamic = item.groupValue"
+              >
                 {{ item?.groupValue }}
+                <span v-if="selectedDynamic === item.groupValue" class="tick"></span>
               </button>
             </a-space>
             <div />
@@ -211,6 +225,8 @@ const listBreadcrumb = ref([]);
 const openModal = ref(false);
 const loading = ref(false);
 const quantity = ref(1);
+const selectedKichThuoc = ref(null);
+const selectedDynamic = ref(null);
 
 const getImgUrl = (i) => {
   return listImgProduct.value[i];
@@ -395,6 +411,19 @@ onMounted(async () => {
   gap: 16px;
 }
 
+.product-quantity h3 {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+.product-quantity .ant-input-number {
+  font-size: 14px;
+  height: 32px;
+}
+.product-quantity .ant-input-number-input {
+  font-size: 14px;
+  height: 32px;
+}
+
 .calculator-link {
   color: #00a859;
   text-decoration: underline;
@@ -442,5 +471,41 @@ onMounted(async () => {
   width: 100%;
   height: 48px;
   font-size: 16px;
+}
+
+.option-btn {
+  border: 1.5px solid #d9d9d9;
+  background: #fff;
+  color: #222;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  position: relative;
+  min-width: 44px;
+  min-height: 28px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.option-btn.active {
+  border: 2px solid #e53935;
+  box-shadow: 0 2px 8px rgba(229,57,53,0.08);
+  color: #e53935;
+  background: #fff;
+}
+.option-btn.active .tick {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 16px;
+  height: 16px;
+  background: url('data:image/svg+xml;utf8,<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="16" height="16" rx="4" fill="%23e53935"/><polyline points="4,9 7,12 12,5" fill="none" stroke="white" stroke-width="1.5"/></svg>') no-repeat center center;
+  background-size: contain;
+  content: '';
+  display: inline-block;
+}
+.option-btn:hover {
+  border: 1.5px solid #e53935;
+  color: #e53935;
 }
 </style>
