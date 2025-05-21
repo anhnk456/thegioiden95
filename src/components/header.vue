@@ -2,6 +2,7 @@
 import { onMounted, ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { getCurrentUser, logout } from "@/api/auth";
+import axios from 'axios';
 
 import {
   UserOutlined,
@@ -31,6 +32,7 @@ const categoryHeader = ref([]);
 const categoryListParent = ref([]);
 const categoryListParentHeader = ref([]);
 const valueSearch = ref();
+const categoryMenu = ref([]);
 
 // Kiểm tra xem có phải đang ở trang admin hoặc trang orders không
 const isAdminPage = computed(() => {
@@ -60,6 +62,10 @@ const getCategoryList = () => {
   return JSON.parse(JSON.stringify(categoryList.value));
 };
 
+const goSearchByDanhMuc = (id) => {
+  router.push({ path: '/search', query: { id } });
+};
+
 onMounted(async () => {
   // Chỉ gọi API khi không phải ở trang admin
   if (!isAdminPage.value) {
@@ -71,6 +77,10 @@ onMounted(async () => {
       categoryList.value = res.data;
       categoryListParent.value = getDataCategoryParent();
       categoryListParentHeader.value = categoryListParent.value.slice(0, 5);
+
+      // Lấy menu danh mục cho thanh icon
+      const resMenu = await axios.get('https://the-gioi-den.up.railway.app/get-all-danh-muc-by-thu-muc');
+      categoryMenu.value = resMenu.data;
     } catch (error) {
       console.log(error);
     } finally {
@@ -94,19 +104,18 @@ defineExpose({ getCategoryList });
       </a-row>
     </div>
     <div class="nav">
-      <div class="nav-pc">
-        <div class="navigation">
-          <a href="/" class="navigation-logo">
-            <img
-              class="navigation-logo-img"
-              src="../assets/img/logo.png"
-              alt="Đèn LED VN"
-            />
-          </a>
-        </div>
-        <div v-if="!isAdminPage" class="nav-category">
-          <ul class="category-pc">
-            <li class="category-pc-item category-pc-show-all">
+      <div class="nav-pc nav-flex-row">
+        <a href="/" class="navigation-logo" style="margin-right: 12px;">
+          <img
+            class="navigation-logo-img"
+            src="../assets/img/logo.png"
+            alt="Đèn LED VN"
+          />
+        </a>
+        <div v-if="!isAdminPage" class="nav-category nav-flex-row mobile-category-bar" style="margin-left: 0;">
+          <ul class="category-pc nav-flex-row">
+            <!-- Mục tất cả SP -->
+            <li class="category-pc-item category-pc-show-all" style="padding: 0 8px;">
               <a-popover placement="bottomRight">
                 <template #content>
                   <a-row style="width: 800px" :gutter="20">
@@ -121,9 +130,7 @@ defineExpose({ getCategoryList });
                       <li
                         v-for="catagory in item.listDanhMuc"
                         :key="catagory.id"
-                        @click="
-                          goSearchSpByDm(catagory.id, catagory.tenDanhMuc)
-                        "
+                        @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
                       >
                         <div class="caterogy-list-item-all">
                           {{ catagory.tenDanhMuc }}
@@ -132,42 +139,30 @@ defineExpose({ getCategoryList });
                     </a-col>
                   </a-row>
                 </template>
-                <a class="category-pc-list"> TẤT CẢ SP </a>
+                <a class="category-pc-list category-pc-icon">
+                  <span style="display:block;width:32px;height:32px;margin:0 auto;">
+                    <svg width="32" height="32" viewBox="0 0 32 32">
+                      <rect y="6" width="32" height="4" rx="2" fill="#888"/>
+                      <rect y="14" width="32" height="4" rx="2" fill="#888"/>
+                      <rect y="22" width="32" height="4" rx="2" fill="#888"/>
+                    </svg>
+                  </span>
+                  <span style="display:block;font-size:13px;margin-top:2px;text-align:center;">Tất cả</span>
+                </a>
               </a-popover>
             </li>
-            <li
-              v-for="item in categoryListParentHeader"
-              :key="item.id"
-              class="category-pc-item category-pc-show-all"
-            >
-              <a class="category-pc-list"> {{ item.tenThuMuc }}</a>
-              <ul class="category-all-menu">
-                <li
-                  v-for="catagory in item.listDanhMuc"
-                  :key="catagory.id"
-                  class="category-all-menu-item"
-                  @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
-                >
-                  <a class="category-all-menu-list">
-                    {{ catagory.tenDanhMuc }}
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li class="category-pc-item">
-              <a class="category-pc-list">CÂU HỎI</a>
-            </li>
-            <li class="category-pc-item">
-              <a class="category-pc-list">CHÍNH SÁCH</a>
+            <!-- Các mục còn lại -->
+            <li v-for="item in categoryMenu" :key="item.id" class="category-pc-item mobile-hide-category" style="padding: 0 8px;">
+              <a class="category-pc-list category-pc-icon" @click="goSearchByDanhMuc(item.listDanhMuc[0]?.id)">
+                <img v-if="item.listDanhMuc[0]?.anhDanhMuc" :src="item.listDanhMuc[0].anhDanhMuc" alt="icon" style="width:32px;height:32px;border-radius:50%;background:#eee;object-fit:cover;display:block;margin:0 auto;" />
+                <span style="display:block;font-size:13px;margin-top:2px;text-align:center;">{{ item.listDanhMuc[0]?.tenDanhMuc }}</span>
+              </a>
             </li>
           </ul>
         </div>
-        <div class="nav-actions">
+        <div class="nav-actions nav-flex-row" style="margin-left:auto;align-items:center;">
           <div class="nav-search">
             <a-input-group compact class="search-group">
-              <a-select value="all" size="large">
-                <a-select-option value="all">Tất cả</a-select-option>
-              </a-select>
               <a-input
                 v-model:value="valueSearch"
                 size="large"
@@ -179,8 +174,7 @@ defineExpose({ getCategoryList });
               </a-button>
             </a-input-group>
           </div>
-
-          <div class="user-actions">
+          <div class="user-actions nav-flex-row" style="align-items:center;">
             <a-button @click="cartStore.toggleCart" size="large" type="text" class="cart-button">
               <template #icon>
                 <shopping-cart-outlined />
@@ -193,7 +187,6 @@ defineExpose({ getCategoryList });
                 }"
               />
             </a-button>
-            
             <a-dropdown v-if="currentUser" placement="bottomRight">
               <a-button size="large" type="text" class="user-button">
                 <template #icon><UserOutlined /></template>
@@ -224,49 +217,11 @@ defineExpose({ getCategoryList });
                 </a-menu>
               </template>
             </a-dropdown>
-            
             <a-button v-else @click="router.push('/login')" size="large" type="text">
               <template #icon><UserOutlined /></template>
             </a-button>
           </div>
         </div>
-
-        <a-button
-          v-if="!isAdminPage"
-          @click="showDrawer"
-          size="large"
-          type="text"
-          class="nav-bars-btn"
-        >
-          <template #icon>
-            <MenuOutlined />
-          </template>
-        </a-button>
-        <a-drawer v-model:open="open" title="" placement="right">
-          <a-menu mode="inline">
-            <a-sub-menu key="sub1">
-              <template #title>TẤT CẢ SP</template>
-              <a-sub-menu
-                v-for="item in categoryListParent"
-                :key="item.id"
-                :title="item.tenThuMuc"
-              >
-                <a-menu-item
-                  v-for="catagory in item.listDanhMuc"
-                  :key="catagory.id"
-                  @click="goSearchSpByDm(catagory.id, catagory.tenDanhMuc)"
-                  >{{ catagory.tenDanhMuc }}
-                </a-menu-item>
-              </a-sub-menu>
-            </a-sub-menu>
-            <a-menu-item key="1">
-              <span>CÂU HỎI</span>
-            </a-menu-item>
-            <a-menu-item key="2">
-              <span>CHÍNH SÁCH</span>
-            </a-menu-item>
-          </a-menu>
-        </a-drawer>
       </div>
     </div>
   </a-spin>
@@ -282,12 +237,11 @@ defineExpose({ getCategoryList });
 
 .nav-pc {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  box-shadow: 0 0 0.8px rgba(0, 0, 0, 1);
-  flex-wrap: wrap-reverse;
-  background-color: var(--white-color);
+  align-items: center !important;
+  height: 72px;
+  min-height: 72px;
+  padding: 0 12px;
+  gap: 0;
 }
 
 .navigation-logo-img {
@@ -300,9 +254,9 @@ defineExpose({ getCategoryList });
 
 .category-pc {
   display: flex;
-  flex-wrap: wrap;
-  list-style: none;
-  position: relative;
+  align-items: center;
+  gap: 0;
+  margin: 0;
 }
 
 .category-pc-item {
@@ -396,8 +350,9 @@ defineExpose({ getCategoryList });
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-left: auto;
+  margin-left: auto !important;
+  gap: 8px;
+  height: 72px;
 }
 
 .user-actions {
@@ -434,8 +389,12 @@ defineExpose({ getCategoryList });
 
 .cart-button,
 .user-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 40px;
   width: 40px;
+  margin: 0 4px;
 }
 
 .cart-button :deep(.anticon),
@@ -527,16 +486,68 @@ defineExpose({ getCategoryList });
 }
 /*  Mobile & Tablet */
 @media (max-width: 63.9375em) {
+  .mobile-hide-category {
+    display: none !important;
+  }
+  .mobile-category-bar {
+    min-width: unset !important;
+    margin-right: 0 !important;
+  }
   .nav-category {
-    display: none;
+    margin-right: 0 !important;
   }
-
-  .nav-bars-btn {
-    display: block;
+  .nav-pc {
+    padding: 0 4px !important;
   }
-
-  .header-top-more-info {
-    display: none;
+  .navigation-logo-img {
+    width: 120px !important;
+    height: 40px !important;
+  }
+  .nav-actions {
+    flex-direction: row !important;
+    gap: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    margin-left: auto !important;
+    height: 48px !important;
+  }
+  .user-actions {
+    flex-direction: row !important;
+    gap: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .nav-search {
+    margin: 0 4px !important;
+    height: 48px !important;
+  }
+  .search-group {
+    min-width: 120px !important;
+    width: 120px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .search-group :deep(.ant-input) {
+    width: 70px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+    border-radius: 4px 0 0 4px !important;
+  }
+  .search-group :deep(.ant-btn) {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    border-radius: 0 4px 4px 0 !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .category-pc-item.category-pc-show-all {
+    padding: 0 4px !important;
+  }
+  .category-pc-list.category-pc-icon span {
+    font-size: 12px !important;
   }
 }
 
@@ -652,5 +663,128 @@ defineExpose({ getCategoryList });
   .search-group {
     min-width: 300px;
   }
+}
+
+.nav-pc.nav-flex-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+}
+.nav-category.nav-flex-row {
+  display: flex;
+  align-items: flex-end;
+  margin-left: 0;
+}
+.category-pc.nav-flex-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  margin: 0;
+}
+.category-pc-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+}
+.category-pc-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+.nav-actions.nav-flex-row {
+  display: flex;
+  align-items: flex-end;
+  margin-left: auto;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+.user-actions.nav-flex-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --- Ghi đè căn chỉnh header sát hàng, đồng nhất chiều cao, căn giữa dọc, các thành phần sát nhau --- */
+.nav-pc {
+  display: flex;
+  align-items: center !important;
+  height: 72px;
+  min-height: 72px;
+  padding: 0 12px;
+  gap: 0;
+}
+
+.navigation-logo {
+  display: flex;
+  align-items: center;
+  height: 72px;
+  margin-right: 8px !important;
+}
+
+.nav-category {
+  display: flex;
+  align-items: center;
+  margin-left: 0 !important;
+  margin-right: 8px !important;
+}
+
+.category-pc {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+}
+
+.category-pc-item,
+.category-pc-icon {
+  margin: 0 !important;
+  padding: 0 4px !important;
+  height: 72px;
+  justify-content: center;
+}
+
+.category-pc-icon img,
+.category-pc-icon svg {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto;
+  display: block;
+}
+
+.category-pc-icon span {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.2;
+  text-align: center;
+  display: block;
+}
+
+.nav-search {
+  display: flex;
+  align-items: center;
+  height: 72px;
+  margin: 0 8px;
+}
+
+.search-group :deep(.ant-input),
+.search-group :deep(.ant-btn) {
+  height: 40px !important;
+  line-height: 40px !important;
+}
+
+.cart-button,
+.user-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  margin: 0 4px;
 }
 </style>
