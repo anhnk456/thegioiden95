@@ -109,7 +109,8 @@ const goSearchSpByDm = (id, name) => {
   }
 
   .category-header {
-    padding: 8px 10px;
+    text-align: left;
+    padding-left: 8px;
   }
 
   .category-title {
