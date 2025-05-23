@@ -1,7 +1,7 @@
 import axiosInstance from '@/config/axios.config';
 import { convertURLParams } from "@/until/format";
 
-const URL = "https://the-gioi-den.up.railway.app/";
+const URL = "http://localhost:8080/";
 
 const API = {
   // API Sản phẩm

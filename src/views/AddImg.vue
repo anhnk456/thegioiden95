@@ -9,7 +9,19 @@
         padding-right: 60px;
       "
     >
-      <a-button @click="onOpen" type="primary">Thêm sản phẩm</a-button>
+      <a-space>
+        <a-upload
+          :show-upload-list="false"
+          :before-upload="beforeUploadExcel"
+          @change="handleExcelChange"
+        >
+          <a-button type="primary">
+            <upload-outlined></upload-outlined>
+            Import Excel
+          </a-button>
+        </a-upload>
+        <a-button @click="onOpen" type="primary">Thêm sản phẩm</a-button>
+      </a-space>
     </div>
     <div class="wrapper-table">
       <a-form ref="formRef" :model="formSearch">
@@ -145,25 +157,6 @@
           <a-form-item label="Mã sản phẩm" name="maSp">
             <a-input v-model:value="formAdd.maSp" />
           </a-form-item>
-          <a-form-item
-            label="Giá sản phẩm"
-            name="giaSp"
-            :rules="[{ required: true, message: 'Vui lòng nhập giá sản phẩm' }]"
-          >
-            <a-input v-model:value="formAdd.giaSp" />
-          </a-form-item>
-          <a-form-item label="Hiệu suất" name="hieuSuat">
-            <a-input v-model:value="formAdd.hieuSuat" />
-          </a-form-item>
-          <a-form-item label="Chỉ số hoàn màu" name="chiSoHoanMau">
-            <a-input v-model:value="formAdd.chiSoHoanMau" />
-          </a-form-item>
-          <a-form-item label="Góc chiếu" name="gocChieu">
-            <a-input v-model:value="formAdd.gocChieu" />
-          </a-form-item>
-          <a-form-item label="Tuổi thọ" name="tuoiTho">
-            <a-input v-model:value="formAdd.tuoiTho" />
-          </a-form-item>
           <a-form-item label="Công suất" name="congSuat">
             <a-input v-model:value="formAdd.congSuat" />
           </a-form-item>
@@ -203,12 +196,38 @@
           <a-form-item label="Mô tả" name="moTa">
             <a-textarea v-model:value="formAdd.moTa" type="textarea" />
           </a-form-item>
+          <a-form-item label="Thông số kỹ thuật" name="thongSo">
+            <a-textarea v-model:value="formAdd.thongSo" type="textarea" />
+          </a-form-item>
           <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
             <a-button type="primary" @click="submit">Xác nhận</a-button>
           </a-form-item>
         </a-form>
       </a-spin>
     </a-drawer>
+    <a-modal
+      v-model:open="previewModalVisible"
+      title="Xem trước dữ liệu Excel"
+      width="80%"
+      :footer="null"
+    >
+      <div v-if="excelPreviewData.length > 0">
+        <a-table
+          :columns="previewColumns"
+          :dataSource="excelPreviewData"
+          :pagination="false"
+          :scroll="{ x: 1000 }"
+        />
+        <div style="margin-top: 16px; text-align: right">
+          <a-space>
+            <a-button @click="previewModalVisible = false">Hủy</a-button>
+            <a-button type="primary" @click="confirmUpload" :loading="uploading">
+              Xác nhận Upload
+            </a-button>
+          </a-space>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 <script lang="ts" setup>
@@ -225,6 +244,11 @@ import {
   RightCircleOutlined,
   PlusOutlined,
 } from "@ant-design/icons-vue";
+import * as XLSX from 'xlsx';
+import axios from 'axios';
+import { useCartStore } from '@/store/cart';
+import { useRoute, useRouter } from 'vue-router';
+import { getCurrentUser } from '@/api/auth';
 
 import Header from "@/components/header.vue";
 import {
@@ -253,15 +277,11 @@ const formAddInit = {
   moTa: "",
   thuongHieu: "",
   maSp: "",
-  giaSp: "",
   anhSang: "",
   congSuat: "",
-  tuoiTho: "",
-  gocChieu: "",
-  chiSoHoanMau: "",
-  hieuSuat: "",
   giaCongSuat: "",
   kichThuoc: "",
+  thongSo: "",
 };
 
 const listDynamic = ref<DynamicList[]>([]);
@@ -381,9 +401,9 @@ const onEdit = async (record) => {
     formAdd.value = res.data.sanPham;
 
     if (res.data.listCongSuat.length > 0) {
-      formAdd.value.giaCongSuat = res.data.listCongSuat
-        .map((item) => item.giaTien)
-        .join("-");
+      const list = res.data.listCongSuat;
+      formAdd.value.congSuat = list.map(item => item.groupValue).join('-');
+      formAdd.value.giaCongSuat = list.map(item => item.giaTien).join('-');
     }
 
     if (res.data.listDynamic.length > 0) {
@@ -554,6 +574,161 @@ const onChange = (current: number) => {
 
 const deteleImg = () => {
   listImgProduct.value.splice(indeximgInCarousel.value, 1);
+};
+
+const previewModalVisible = ref(false);
+const excelPreviewData = ref([]);
+const uploading = ref(false);
+const tempExcelData = ref(null);
+
+const previewColumns = [
+  {
+    title: 'Danh mục ID',
+    dataIndex: 'danhMucSanPhamId',
+    width: 100,
+  },
+  {
+    title: 'Mã SP',
+    dataIndex: 'maSp',
+    width: 120,
+  },
+  {
+    title: 'Thương hiệu',
+    dataIndex: 'thuongHieu',
+    width: 150,
+  },
+  {
+    title: 'Tên sản phẩm',
+    dataIndex: 'tenSanPham',
+    width: 200,
+  },
+  {
+    title: 'Công suất',
+    dataIndex: 'congSuat',
+    width: 150,
+  },
+  {
+    title: 'Giá tiền',
+    dataIndex: 'giaTien',
+    width: 150,
+  },
+  {
+    title: 'Mô tả',
+    dataIndex: 'moTa',
+    width: 200,
+  },
+  {
+    title: 'Thông số',
+    dataIndex: 'thongSo',
+    width: 200,
+  },
+];
+
+const route = useRoute();
+const router = useRouter();
+const cartStore = useCartStore();
+
+const handleExcelChange = async ({ file }: UploadChangeParam) => {
+  try {
+    if (file.status !== "uploading") {
+      loadingTable.value = true;
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = new Uint8Array(e.target.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+          // Skip header row and process data
+          const rows = jsonData.slice(1);
+          
+          const products = rows.map(row => {
+            const congSuatList = row[4]?.split('-') || [];
+            const giaTienList = row[5]?.split('-') || [];
+            
+            const listCongSuat = congSuatList.map((congSuat, index) => ({
+              tenPhanLoai: "congSuat",
+              groupValue: congSuat.trim(),
+              giaTien: giaTienList[index]?.trim() || "0"
+            }));
+
+            return {
+              sanPham: {
+                id: "",
+                danhMucSanPhamId: row[0],
+                tenSanPham: row[3],
+                thongSo: row[7] || "",
+                maSp: row[1],
+                thuongHieu: row[2],
+                moTa: row[6]
+              },
+              listCongSuat
+            };
+          });
+
+          // Store processed data for later use
+          tempExcelData.value = products;
+
+          // Prepare preview data
+          excelPreviewData.value = rows.map(row => ({
+            danhMucSanPhamId: row[0],
+            maSp: row[1],
+            thuongHieu: row[2],
+            tenSanPham: row[3],
+            congSuat: row[4],
+            giaTien: row[5],
+            moTa: row[6],
+            thongSo: row[7] || ""
+          }));
+
+          // Show preview modal
+          previewModalVisible.value = true;
+        } catch (error) {
+          console.error('Error processing Excel:', error);
+          message.error('Có lỗi xảy ra khi xử lý file Excel');
+        }
+      };
+      reader.readAsArrayBuffer(file.originFileObj);
+    }
+  } catch (error) {
+    console.error('Error uploading Excel:', error);
+    message.error('Có lỗi xảy ra khi tải lên file Excel');
+  } finally {
+    loadingTable.value = false;
+  }
+};
+
+const confirmUpload = async () => {
+  if (!tempExcelData.value) return;
+
+  try {
+    uploading.value = true;
+    const user = getCurrentUser();
+    if (!user || !user.token) {
+      message.error('Vui lòng đăng nhập để thực hiện chức năng này');
+      return;
+    }
+
+    await axios.post('http://localhost:8080/them-moi-list-sp', tempExcelData.value, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    });
+
+    message.success('Import sản phẩm thành công');
+    previewModalVisible.value = false;
+    await fetch();
+  } catch (error) {
+    console.error('Error uploading data:', error);
+    if (error.response?.status === 401) {
+      message.error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
+    } else {
+      message.error('Có lỗi xảy ra khi upload dữ liệu');
+    }
+  } finally {
+    uploading.value = false;
+  }
 };
 
 onMounted(async () => {

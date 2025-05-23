@@ -64,31 +64,13 @@
                 <div class="product-price-sale">
                   {{ numberToVndCurrency(detailImg?.giaSp) }}
                 </div>
-                <!-- <div class="product-price-original">{{ detailImg?.giaSp }}</div> -->
-                <!-- <div class="product-price-percent">(Đã bao gồm VAT)</div> -->
               </a-space>
             </div>
-            <div class="mt-2">
-              <a-space>
-                <h4>Hiệu suất:</h4>
-                <span>{{ detailImg?.hieuSuat }}</span>
-              </a-space>
-            </div>
-            <div class="mt-1">
-              <a-space>
-                <h4>Chỉ số hoàn màu:</h4>
-                <span>{{ detailImg?.chiSoHoanMau }}</span>
-              </a-space>
-            </div>
-            <div class="mt-1">
-              <a-space>
-                <h4>Góc chiếu:</h4>
-                <span>{{ detailImg?.gocChieu }}</span>
-              </a-space>
-              <div class="mt-1">
+            <div v-if="technicalSpecs" class="mt-1">
+              <div v-for="(value, key) in technicalSpecs" :key="key" class="mt-1">
                 <a-space>
-                  <h4>Tuổi thọ:</h4>
-                  <span>{{ detailImg?.tuoiTho }}</span>
+                  <h4>{{ key }}:</h4>
+                  <span>{{ value }}</span>
                 </a-space>
               </div>
             </div>
@@ -102,19 +84,6 @@
               >
                 {{ item?.groupValue }}
                 <span v-if="detailImg?.giaSp === item.giaSanPham" class="tick"></span>
-              </button>
-            </a-space>
-            <div />
-            <a-space class="mt-2">
-              <h3>{{ listKichThuoc[0]?.tenPhanLoai || "Kích thước" }}</h3>
-              <button
-                v-for="(item, index) in listKichThuoc"
-                :key="index"
-                :class="['option-btn', { active: selectedKichThuoc === item.groupValue }]"
-                @click="selectedKichThuoc = item.groupValue"
-              >
-                {{ item?.groupValue }}
-                <span v-if="selectedKichThuoc === item.groupValue" class="tick"></span>
               </button>
             </a-space>
             <div />
@@ -218,14 +187,12 @@ const idImage = computed(() => route.query.id);
 
 const listImgProduct = ref([]);
 const listCongSuat = ref([]);
-const listKichThuoc = ref([]);
 const listDynamic = ref([]);
 const detailImg = ref();
 const listBreadcrumb = ref([]);
 const openModal = ref(false);
 const loading = ref(false);
 const quantity = ref(1);
-const selectedKichThuoc = ref(null);
 const selectedDynamic = ref(null);
 
 const getImgUrl = (i) => {
@@ -234,6 +201,12 @@ const getImgUrl = (i) => {
 
 const goSearchSpByDm = (id, name) => {
   router.push({ path: "/search", query: { id, name } });
+};
+
+const getDisplayTitle = (value) => {
+  if (!value) return '';
+  const lastChar = value.slice(-1).toLowerCase();
+  return lastChar === 'w' ? 'Công Suất' : 'Sải cánh';
 };
 
 const changeGiaSp = (item) => {
@@ -251,6 +224,18 @@ const addToCart = () => {
     cartStore.toggleCart();
   }
 };
+
+const technicalSpecs = computed(() => {
+  if (!detailImg.value?.thongSo) return null;
+  try {
+    // Remove all backslashes and parse JSON
+    const cleanJson = detailImg.value.thongSo.replace(/\\/g, '');
+    return JSON.parse(cleanJson);
+  } catch (error) {
+    console.error('Error parsing technical specifications:', error);
+    return null;
+  }
+});
 
 onMounted(async () => {
   try {
@@ -277,15 +262,8 @@ onMounted(async () => {
           groupValue: item.groupValue,
         });
       });
-    }
-
-    if (res.data.listKichThuoc.length > 0) {
-      const list = res.data.listKichThuoc;
-      list.forEach((item) => {
-        listKichThuoc.value.push({
-          groupValue: item.groupValue,
-        });
-      });
+      // Set initial price from first item
+      detailImg.value.giaSp = list[0].giaTien;
     }
 
     if (res.data.listDynamic.length > 0) {
