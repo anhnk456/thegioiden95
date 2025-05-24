@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  BASE_URL: 'http://47.129.50.217:8080',
-  API_URL: 'http://47.129.50.217:8080/api',
-  AUTH_URL: 'http://47.129.50.217:8080/api/auth'
+  BASE_URL: 'https://the-gioi-den.up.railway.app',
+  API_URL: 'https://the-gioi-den.up.railway.app/api',
+  AUTH_URL: 'https://the-gioi-den.up.railway.app/api/auth'
 };
