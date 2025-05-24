@@ -4,7 +4,7 @@ export const config = {
 
 export default async function handler(req) {
   const url = new URL(req.url);
-  const targetUrl = url.pathname.replace('/api/', 'https://the-gioi-den.up.railway.app/');
+  const targetUrl = url.pathname.replace('/api/', 'http://47.129.50.217:8080/');
 
   try {
     const response = await fetch(targetUrl, {
