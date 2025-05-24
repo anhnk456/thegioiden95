@@ -710,7 +710,7 @@ const confirmUpload = async () => {
       return;
     }
 
-    await axios.post('https://the-gioi-den.up.railway.app/them-moi-list-sp', tempExcelData.value, {
+    await axios.post('http://47.129.50.217:8080/them-moi-list-sp', tempExcelData.value, {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
