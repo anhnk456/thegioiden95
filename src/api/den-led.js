@@ -1,7 +1,7 @@
 import axiosInstance from '@/config/axios.config';
 import { convertURLParams } from "@/until/format";
 
-const URL = "http://47.129.50.217:8080/";
+const URL = "/api/";
 
 const API = {
   // API Sản phẩm
