@@ -79,7 +79,7 @@ onMounted(async () => {
       categoryListParentHeader.value = categoryListParent.value.slice(0, 5);
 
       // Lấy menu danh mục cho thanh icon
-      const resMenu = await axios.get('http://47.129.50.217:8080/get-all-danh-muc-by-thu-muc');
+      const resMenu = await axios.get('https://the-gioi-den.up.railway.app/get-all-danh-muc-by-thu-muc');
       categoryMenu.value = resMenu.data;
     } catch (error) {
       console.log(error);
