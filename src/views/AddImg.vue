@@ -710,7 +710,7 @@ const confirmUpload = async () => {
       return;
     }
 
-    await axios.post('https://the-gioi-den.up.railway.app/them-moi-list-sp', tempExcelData.value, {
+    await axios.post('https://thegioiden.store/api/them-moi-list-sp', tempExcelData.value, {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
