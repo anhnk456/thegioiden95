@@ -69,39 +69,54 @@
             <div v-if="technicalSpecs" class="mt-1">
               <div v-for="(value, key) in technicalSpecs" :key="key" class="mt-1">
                 <a-space>
-                  <h4>{{ key }}:</h4>
-                  <span>{{ value }}</span>
+                  <h4 class="product-detail-label">{{ key }}:</h4>
+                  <span class="product-detail-value">{{ value }}</span>
                 </a-space>
               </div>
             </div>
             <a-space class="mt-4">
-              <h3>{{ listCongSuat[0]?.tenPhanLoai || "Công suất" }}</h3>
+              <h3 class="product-detail-label" style="font-weight: bold;">{{ listCongSuat[0]?.tenPhanLoai || "Công suất" }}</h3>
               <button
                 v-for="(item, index) in listCongSuat"
                 :key="index"
-                @click="changeGiaSp(item)"
                 :class="['option-btn', { active: detailImg?.giaSp === item.giaSanPham }]"
+                @click="changeGiaSp(item)"
               >
-                {{ item?.groupValue }}
+                <span style="font-weight: normal;">{{ item?.groupValue }}</span>
                 <span v-if="detailImg?.giaSp === item.giaSanPham" class="tick"></span>
               </button>
             </a-space>
             <div />
-            <a-space v-if="listDynamic.length > 0" class="mt-2">
-              <h3>{{ listDynamic[0]?.tenPhanLoai }}</h3>
+            <a-space v-if="listDynamic.length > 0 && listDynamic.some(item => item.groupValue)" class="mt-2">
+              <h3 class="product-detail-label" style="font-weight: bold;">{{ listDynamic[0]?.tenPhanLoai }}</h3>
               <button
                 v-for="(item, index) in listDynamic"
                 :key="index"
                 :class="['option-btn', { active: selectedDynamic === item.groupValue }]"
                 @click="selectedDynamic = item.groupValue"
               >
-                {{ item?.groupValue }}
+                <span style="font-weight: normal;">{{ item?.groupValue }}</span>
                 <span v-if="selectedDynamic === item.groupValue" class="tick"></span>
               </button>
             </a-space>
+            <a-space v-if="listDynamic2.length > 0 && listDynamic2.some(item => item.groupValue)" class="mt-2" style="display: flex; flex-direction: row; align-items: center;">
+              <h3 style="margin-right: 12px; font-weight: bold;" class="product-detail-label">{{ listDynamic2[0]?.tenPhanLoai }}</h3>
+              <div>
+                <button
+                  v-for="(item, index) in listDynamic2"
+                  :key="index"
+                  :class="['option-btn', { active: selectedDynamic2 === item.groupValue }]"
+                  @click="selectedDynamic2 = item.groupValue"
+                  style="margin-right: 8px;"
+                >
+                  <span style="font-weight: normal;">{{ item?.groupValue }}</span>
+                  <span v-if="selectedDynamic2 === item.groupValue" class="tick"></span>
+                </button>
+              </div>
+            </a-space>
             <div />
             <div class="product-quantity mt-2">
-              <h3>Số lượng</h3>
+              <h3 class="product-detail-label">Số lượng</h3>
               <a-space>
                 <a-input-number 
                   v-model:value="quantity"
@@ -109,7 +124,6 @@
                   :max="100"
                   size="large"
                 />
-                <a class="calculator-link">Click vào đây để tính toán số lượng đèn</a>
               </a-space>
             </div>
             <div class="product-actions mt-4">
@@ -188,12 +202,14 @@ const idImage = computed(() => route.query.id);
 const listImgProduct = ref([]);
 const listCongSuat = ref([]);
 const listDynamic = ref([]);
+const listDynamic2 = ref([]);
 const detailImg = ref();
 const listBreadcrumb = ref([]);
 const openModal = ref(false);
 const loading = ref(false);
 const quantity = ref(1);
 const selectedDynamic = ref(null);
+const selectedDynamic2 = ref(null);
 
 const getImgUrl = (i) => {
   return listImgProduct.value[i];
@@ -260,9 +276,9 @@ onMounted(async () => {
         listCongSuat.value.push({
           giaSanPham: item.giaTien,
           groupValue: item.groupValue,
+          tenPhanLoai: item.tenPhanLoai,
         });
       });
-      // Set initial price from first item
       detailImg.value.giaSp = list[0].giaTien;
     }
 
@@ -270,6 +286,16 @@ onMounted(async () => {
       const list = res.data.listDynamic;
       list.forEach((item) => {
         listDynamic.value.push({
+          groupValue: item.groupValue,
+          tenPhanLoai: item.tenPhanLoai,
+        });
+      });
+    }
+
+    if (res.data.listDynamic2 && res.data.listDynamic2.length > 0) {
+      const list = res.data.listDynamic2;
+      list.forEach((item) => {
+        listDynamic2.value.push({
           groupValue: item.groupValue,
           tenPhanLoai: item.tenPhanLoai,
         });
@@ -295,6 +321,14 @@ onMounted(async () => {
 }
 .product-price {
   margin-top: 2rem;
+}
+
+.product-detail-label,
+.product-detail-value,
+.option-btn {
+  font-size: 16px !important;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .product-price-sale {

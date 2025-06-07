@@ -157,40 +157,47 @@
           <a-form-item label="Mã sản phẩm" name="maSp">
             <a-input v-model:value="formAdd.maSp" />
           </a-form-item>
-          <a-form-item label="Công suất" name="congSuat">
-            <a-input v-model:value="formAdd.congSuat" />
-          </a-form-item>
-          <a-form-item label="Giá công suất" name="giaCongSuat">
+          <div style="margin-bottom: 20px; margin-left: 71px">
+            <a-row :gutter="10" span="24">
+              <a-col span="6">
+                <a-input v-model:value="formAdd.tenCongSuat" placeholder="Nhập tên (ví dụ: Công suất)" />
+              </a-col>
+              <a-col span="14">
+                <a-input v-model:value="formAdd.congSuat" placeholder="Nhập giá trị, cách nhau bằng dấu - (ví dụ: 10W-20W-30W)" />
+              </a-col>
+            </a-row>
+          </div>
+          <a-form-item label="Giá sản phẩm" name="giaCongSuat">
             <a-input v-model:value="formAdd.giaCongSuat" />
           </a-form-item>
-          <a-form-item label="Kích thước" name="kichThuoc">
+          <div style="margin-bottom: 20px; margin-left: 71px">
             <a-row :gutter="10" span="24">
-              <a-col span="20">
-                <a-input v-model:value="formAdd.kichThuoc"
-              /></a-col>
-              <a-col span="4">
-                <a-button
-                  :disabled="listDynamic.length > 0"
-                  type="dashed"
-                  block
-                  @click="addDynamic"
-                >
-                  <PlusOutlined /> </a-button
-              ></a-col>
+              <a-col span="6">
+                <a-input v-model:value="formAdd.tenKichThuoc" placeholder="Nhập tên (ví dụ: Kích thước)" />
+              </a-col>
+              <a-col span="14">
+                <a-input v-model:value="formAdd.kichThuoc" placeholder="Nhập giá trị, cách nhau bằng dấu - (ví dụ: 100-200-300)" />
+              </a-col>
             </a-row>
-          </a-form-item>
-          <div
-            v-for="(item, index) in listDynamic"
-            :key="index"
-            style="margin-bottom: 20px; margin-left: 71px"
-          >
+          </div>
+          <div style="margin-bottom: 20px; margin-left: 71px">
             <a-row :gutter="10" span="24">
-              <a-col span="6"
-                ><a-input v-model:value="item.tenPhanLoai"> </a-input
-              ></a-col>
-              <a-col span="14"
-                ><a-input v-model:value="item.groupValue"> </a-input
-              ></a-col>
+              <a-col span="6">
+                <a-input v-model:value="formAdd.tenDynamic" placeholder="Nhập tên (ví dụ: Màu sắc)" />
+              </a-col>
+              <a-col span="14">
+                <a-input v-model:value="formAdd.valueDynamic" placeholder="Nhập giá trị, cách nhau bằng dấu - (ví dụ: Đỏ-Xanh-Vàng)" />
+              </a-col>
+            </a-row>
+          </div>
+          <div style="margin-bottom: 20px; margin-left: 71px">
+            <a-row :gutter="10" span="24">
+              <a-col span="6" style="display: flex; align-items: center;">
+                <span>Giá sản phẩm (hiển thị ở trang chủ):</span>
+              </a-col>
+              <a-col span="14">
+                <a-input-number v-model:value="formAdd.giaSp" :min="0" style="width: 100%" placeholder="Nhập giá sản phẩm" />
+              </a-col>
             </a-row>
           </div>
           <a-form-item label="Mô tả" name="moTa">
@@ -226,6 +233,19 @@
             </a-button>
           </a-space>
         </div>
+      </div>
+    </a-modal>
+    <a-modal
+      v-model:open="confirmDeleteVisible"
+      title="Xác nhận xoá sản phẩm"
+      :footer="null"
+      @cancel="confirmDeleteVisible = false"
+      closable
+    >
+      <span>Bạn có chắc chắn muốn xoá sản phẩm này không?</span>
+      <div style="margin-top: 24px; text-align: right">
+        <a-button @click="confirmDeleteVisible = false">Huỷ</a-button>
+        <a-button type="primary" danger style="margin-left: 8px" @click="handleConfirmDelete">Xoá</a-button>
       </div>
     </a-modal>
   </div>
@@ -278,10 +298,15 @@ const formAddInit = {
   thuongHieu: "",
   maSp: "",
   anhSang: "",
+  tenCongSuat: "",
   congSuat: "",
   giaCongSuat: "",
+  tenKichThuoc: "",
   kichThuoc: "",
+  tenDynamic: "",
+  valueDynamic: "",
   thongSo: "",
+  giaSp: '',
 };
 
 const listDynamic = ref<DynamicList[]>([]);
@@ -376,16 +401,27 @@ const onClose = () => {
   open.value = false;
 };
 
-const onDelete = async (record) => {
+const confirmDeleteVisible = ref(false);
+const recordToDelete = ref(null);
+
+const onDelete = (record) => {
+  recordToDelete.value = record;
+  confirmDeleteVisible.value = true;
+};
+
+const handleConfirmDelete = async () => {
+  if (!recordToDelete.value) return;
   try {
     loadingTable.value = true;
-    await deleteProduct(record.id);
+    await deleteProduct(recordToDelete.value.id);
     message.success("Xóa sản phẩm thành công");
     await fetch();
   } catch (error) {
     console.log(error);
   } finally {
     loadingTable.value = false;
+    confirmDeleteVisible.value = false;
+    recordToDelete.value = null;
   }
 };
 
@@ -435,7 +471,7 @@ const getListPhanLoai = (value) => {
   const congSuatList = value.congSuat?.split("-") || [];
   const giaCongSuatList = value.giaCongSuat?.split("-") || [];
   const kichThuocList = value.kichThuoc?.split("-") || [];
-  const dynamicList = listDynamic.value[0]?.groupValue?.split("-") || [];
+  const dynamicList = value.valueDynamic?.split("-") || [];
 
   if (congSuatList.length !== giaCongSuatList.length) {
     return false;
@@ -444,23 +480,29 @@ const getListPhanLoai = (value) => {
   return {
     listCongSuat: congSuatList.map((item, index) => {
       return {
-        tenPhanLoai: "congSuat",
+        tenPhanLoai: value.tenCongSuat || "Công suất",
         groupValue: item.trim(),
         giaTien: giaCongSuatList[index].trim(),
       };
     }),
     listKichThuoc: kichThuocList.map((item) => {
       return {
-        tenPhanLoai: "kichThuoc",
+        tenPhanLoai: value.tenKichThuoc || "Kích thước",
         groupValue: item.trim(),
       };
     }),
     listDynamic: dynamicList.map((item) => {
       return {
-        tenPhanLoai: listDynamic.value[0]?.tenPhanLoai,
+        tenPhanLoai: value.tenDynamic || "",
         groupValue: item.trim(),
       };
     }),
+    listDynamic2: kichThuocList.map((item) => {
+      return {
+        tenPhanLoai: value.tenKichThuoc || "Kích thước",
+        groupValue: item.trim(),
+      };
+    })
   };
 };
 
@@ -485,6 +527,7 @@ const submit = async () => {
       const bodyRequest = {
         sanPham: {
           ...formAdd.value,
+          giaSp: formAdd.value.giaSp,
           linkAnhChinh: listAnhFilter[0].linkAnh,
         },
         listAnh: listAnhFilter.slice(1),
@@ -501,6 +544,7 @@ const submit = async () => {
       const bodyRequest = {
         sanPham: {
           ...formAdd.value,
+          giaSp: formAdd.value.giaSp,
           linkAnhChinh: listAnhFilter[0].linkAnh,
         },
         listAnh: listAnhFilter.slice(1),
