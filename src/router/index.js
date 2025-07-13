@@ -92,10 +92,11 @@ router.beforeEach((to, from, next) => {
 
   // Nếu đang vào trang login và đã đăng nhập
   if (to.path === '/login' && currentUser) {
-    // Kiểm tra role và chuyển hướng
-    if (currentUser.roles?.includes('ROLE_ADMIN')) {
-      next('/admin');
+    // Nếu có trang trước đó và không phải là /login thì quay lại trang đó
+    if (from.fullPath && from.fullPath !== '/login') {
+      next(from.fullPath);
     } else {
+      // Nếu không có thì về trang chủ
       next('/');
     }
     return;
@@ -112,7 +113,8 @@ router.beforeEach((to, from, next) => {
     // Nếu route yêu cầu quyền admin
     if (requiresAdmin && !currentUser.roles?.includes('ROLE_ADMIN')) {
       // Không có quyền admin, chuyển về trang chủ
-      next('/');
+      // next('/'); // Tạm thời comment dòng này để debug
+      console.error('Không có quyền admin!');
       return;
     }
   }

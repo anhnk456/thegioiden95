@@ -14,6 +14,7 @@
           :show-upload-list="false"
           :before-upload="beforeUploadExcel"
           @change="handleExcelChange"
+          action="javascript:;"
         >
           <a-button type="primary">
             <upload-outlined></upload-outlined>
@@ -122,6 +123,7 @@
               :show-upload-list="false"
               :before-upload="beforeUpload"
               @change="handleChange"
+              action="javascript:;"
             >
               <a-button>
                 <upload-outlined></upload-outlined>
@@ -157,40 +159,47 @@
           <a-form-item label="Mã sản phẩm" name="maSp">
             <a-input v-model:value="formAdd.maSp" />
           </a-form-item>
-          <a-form-item label="Công suất" name="congSuat">
-            <a-input v-model:value="formAdd.congSuat" />
-          </a-form-item>
-          <a-form-item label="Giá công suất" name="giaCongSuat">
+          <div style="margin-bottom: 20px; margin-left: 71px">
+            <a-row :gutter="10" span="24">
+              <a-col span="6">
+                <a-input v-model:value="formAdd.tenCongSuat" placeholder="Nhập tên (ví dụ: Công suất)" />
+              </a-col>
+              <a-col span="14">
+                <a-input v-model:value="formAdd.congSuat" placeholder="Nhập giá trị, cách nhau bằng dấu - (ví dụ: 10W-20W-30W)" />
+              </a-col>
+            </a-row>
+          </div>
+          <a-form-item label="Giá sản phẩm" name="giaCongSuat">
             <a-input v-model:value="formAdd.giaCongSuat" />
           </a-form-item>
-          <a-form-item label="Kích thước" name="kichThuoc">
+          <div style="margin-bottom: 20px; margin-left: 71px">
             <a-row :gutter="10" span="24">
-              <a-col span="20">
-                <a-input v-model:value="formAdd.kichThuoc"
-              /></a-col>
-              <a-col span="4">
-                <a-button
-                  :disabled="listDynamic.length > 0"
-                  type="dashed"
-                  block
-                  @click="addDynamic"
-                >
-                  <PlusOutlined /> </a-button
-              ></a-col>
+              <a-col span="6">
+                <a-input v-model:value="formAdd.tenKichThuoc" placeholder="Nhập tên (ví dụ: Kích thước)" />
+              </a-col>
+              <a-col span="14">
+                <a-input v-model:value="formAdd.kichThuoc" placeholder="Nhập giá trị, cách nhau bằng dấu - (ví dụ: 100-200-300)" />
+              </a-col>
             </a-row>
-          </a-form-item>
-          <div
-            v-for="(item, index) in listDynamic"
-            :key="index"
-            style="margin-bottom: 20px; margin-left: 71px"
-          >
+          </div>
+          <div style="margin-bottom: 20px; margin-left: 71px">
             <a-row :gutter="10" span="24">
-              <a-col span="6"
-                ><a-input v-model:value="item.tenPhanLoai"> </a-input
-              ></a-col>
-              <a-col span="14"
-                ><a-input v-model:value="item.groupValue"> </a-input
-              ></a-col>
+              <a-col span="6">
+                <a-input v-model:value="formAdd.tenDynamic" placeholder="Nhập tên (ví dụ: Màu sắc)" />
+              </a-col>
+              <a-col span="14">
+                <a-input v-model:value="formAdd.valueDynamic" placeholder="Nhập giá trị, cách nhau bằng dấu - (ví dụ: Đỏ-Xanh-Vàng)" />
+              </a-col>
+            </a-row>
+          </div>
+          <div style="margin-bottom: 20px; margin-left: 71px">
+            <a-row :gutter="10" span="24">
+              <a-col span="6" style="display: flex; align-items: center;">
+                <span>Giá sản phẩm (hiển thị ở trang chủ):</span>
+              </a-col>
+              <a-col span="14">
+                <a-input-number v-model:value="formAdd.giaSp" :min="0" style="width: 100%" placeholder="Nhập giá sản phẩm" />
+              </a-col>
             </a-row>
           </div>
           <a-form-item label="Mô tả" name="moTa">
@@ -228,6 +237,19 @@
         </div>
       </div>
     </a-modal>
+    <a-modal
+      v-model:open="confirmDeleteVisible"
+      title="Xác nhận xoá sản phẩm"
+      :footer="null"
+      @cancel="confirmDeleteVisible = false"
+      closable
+    >
+      <span>Bạn có chắc chắn muốn xoá sản phẩm này không?</span>
+      <div style="margin-top: 24px; text-align: right">
+        <a-button @click="confirmDeleteVisible = false">Huỷ</a-button>
+        <a-button type="primary" danger style="margin-left: 8px" @click="handleConfirmDelete">Xoá</a-button>
+      </div>
+    </a-modal>
   </div>
 </template>
 <script lang="ts" setup>
@@ -245,7 +267,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons-vue";
 import * as XLSX from 'xlsx';
-import axios from 'axios';
+import axiosInstance from '@/config/axios.config';
 import { useCartStore } from '@/store/cart';
 import { useRoute, useRouter } from 'vue-router';
 import { getCurrentUser } from '@/api/auth';
@@ -278,10 +300,15 @@ const formAddInit = {
   thuongHieu: "",
   maSp: "",
   anhSang: "",
+  tenCongSuat: "",
   congSuat: "",
   giaCongSuat: "",
+  tenKichThuoc: "",
   kichThuoc: "",
+  tenDynamic: "",
+  valueDynamic: "",
   thongSo: "",
+  giaSp: '',
 };
 
 const listDynamic = ref<DynamicList[]>([]);
@@ -376,16 +403,27 @@ const onClose = () => {
   open.value = false;
 };
 
-const onDelete = async (record) => {
+const confirmDeleteVisible = ref(false);
+const recordToDelete = ref(null);
+
+const onDelete = (record) => {
+  recordToDelete.value = record;
+  confirmDeleteVisible.value = true;
+};
+
+const handleConfirmDelete = async () => {
+  if (!recordToDelete.value) return;
   try {
     loadingTable.value = true;
-    await deleteProduct(record.id);
+    await deleteProduct(recordToDelete.value.id);
     message.success("Xóa sản phẩm thành công");
     await fetch();
   } catch (error) {
     console.log(error);
   } finally {
     loadingTable.value = false;
+    confirmDeleteVisible.value = false;
+    recordToDelete.value = null;
   }
 };
 
@@ -435,7 +473,7 @@ const getListPhanLoai = (value) => {
   const congSuatList = value.congSuat?.split("-") || [];
   const giaCongSuatList = value.giaCongSuat?.split("-") || [];
   const kichThuocList = value.kichThuoc?.split("-") || [];
-  const dynamicList = listDynamic.value[0]?.groupValue?.split("-") || [];
+  const dynamicList = value.valueDynamic?.split("-") || [];
 
   if (congSuatList.length !== giaCongSuatList.length) {
     return false;
@@ -444,23 +482,29 @@ const getListPhanLoai = (value) => {
   return {
     listCongSuat: congSuatList.map((item, index) => {
       return {
-        tenPhanLoai: "congSuat",
+        tenPhanLoai: value.tenCongSuat || "Công suất",
         groupValue: item.trim(),
         giaTien: giaCongSuatList[index].trim(),
       };
     }),
     listKichThuoc: kichThuocList.map((item) => {
       return {
-        tenPhanLoai: "kichThuoc",
+        tenPhanLoai: value.tenKichThuoc || "Kích thước",
         groupValue: item.trim(),
       };
     }),
     listDynamic: dynamicList.map((item) => {
       return {
-        tenPhanLoai: listDynamic.value[0]?.tenPhanLoai,
+        tenPhanLoai: value.tenDynamic || "",
         groupValue: item.trim(),
       };
     }),
+    listDynamic2: kichThuocList.map((item) => {
+      return {
+        tenPhanLoai: value.tenKichThuoc || "Kích thước",
+        groupValue: item.trim(),
+      };
+    })
   };
 };
 
@@ -472,7 +516,7 @@ const submit = async () => {
     const phanLoaiList = getListPhanLoai(formAdd.value);
 
     if (!phanLoaiList) {
-      message.success("Công suất và giá tiến công suất phải tương ứng");
+      message.error("Công suất và giá tiến công suất phải tương ứng");
       return;
     }
 
@@ -485,13 +529,17 @@ const submit = async () => {
       const bodyRequest = {
         sanPham: {
           ...formAdd.value,
+          giaSp: formAdd.value.giaSp,
           linkAnhChinh: listAnhFilter[0].linkAnh,
         },
         listAnh: listAnhFilter.slice(1),
         ...phanLoaiList,
       };
+      console.log('Request thêm mới:', bodyRequest);
       await editProduct(bodyRequest);
       message.success("Sửa sản phẩm thành công");
+      onClose();
+      await fetch();
     } else {
       const listAnhFilter = listImgProduct.value.map((item) => {
         return {
@@ -501,21 +549,26 @@ const submit = async () => {
       const bodyRequest = {
         sanPham: {
           ...formAdd.value,
+          giaSp: formAdd.value.giaSp,
           linkAnhChinh: listAnhFilter[0].linkAnh,
         },
         listAnh: listAnhFilter.slice(1),
         ...phanLoaiList,
       };
-      await addProduct(bodyRequest);
+      console.log('Request thêm mới:', bodyRequest);
+      // const response = await addProduct(bodyRequest);
       message.success("Thêm mới sản phẩm thành công");
+      // onClose();
+      // await fetch();
     }
-    onClose();
-    await fetch();
   } catch (error) {
-    console.log(error);
-  } finally {
-    loadingDrawer.value = false;
+    // Nếu có lỗi thì chỉ báo lỗi ra, không đóng drawer, không reload danh sách, không chuyển hướng
+    console.log('Error response:', error?.response);
+    message.error(error?.response?.data?.message || 'Có lỗi xảy ra khi thêm sản phẩm');
   }
+  // finally {
+  //   loadingDrawer.value = false;
+  // }
 };
 
 const handleChangePage = async (page, pageSize) => {
@@ -545,6 +598,18 @@ const beforeUpload: UploadProps["beforeUpload"] = (file) => {
   if (!validFile) {
     message.error(
       "File tải lên không hợp lệ, các file hợp lệ là ['pdf', 'png', 'jpg', 'jpeg'] "
+    );
+  }
+  return validFile || Upload.LIST_IGNORE;
+};
+
+const beforeUploadExcel: UploadProps["beforeUpload"] = (file) => {
+  const enableFilesUpload = ["xlsx", "xls"];
+  const fileName = file.name.replace(/^.*\./, "");
+  const validFile = enableFilesUpload.includes(fileName);
+  if (!validFile) {
+    message.error(
+      "File Excel không hợp lệ, các file hợp lệ là ['xlsx', 'xls'] "
     );
   }
   return validFile || Upload.LIST_IGNORE;
@@ -640,53 +705,79 @@ const handleExcelChange = async ({ file }: UploadChangeParam) => {
           const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
           const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
+          // Kiểm tra dữ liệu có hợp lệ không
+          if (!jsonData || jsonData.length < 2) {
+            message.error('File Excel không có dữ liệu hoặc thiếu dòng tiêu đề');
+            return;
+          }
+
           // Skip header row and process data
           const rows = jsonData.slice(1);
           
-          const products = rows.map(row => {
-            const congSuatList = row[4]?.split('-') || [];
-            const giaTienList = row[5]?.split('-') || [];
-            
-            const listCongSuat = congSuatList.map((congSuat, index) => ({
-              tenPhanLoai: "congSuat",
-              groupValue: congSuat.trim(),
-              giaTien: giaTienList[index]?.trim() || "0"
-            }));
+          const products = rows.map((row, index) => {
+            try {
+              // Kiểm tra và chuyển đổi dữ liệu công suất và giá tiền
+              const congSuatValue = row[4];
+              const giaTienValue = row[5];
+              
+              // Đảm bảo congSuatValue và giaTienValue là string trước khi split
+              const congSuatString = congSuatValue ? String(congSuatValue) : '';
+              const giaTienString = giaTienValue ? String(giaTienValue) : '';
+              
+              const congSuatList = congSuatString ? congSuatString.split('-') : [];
+              const giaTienList = giaTienString ? giaTienString.split('-') : [];
+              
+              const listCongSuat = congSuatList.map((congSuat, idx) => ({
+                tenPhanLoai: "congSuat",
+                groupValue: congSuat.trim(),
+                giaTien: giaTienList[idx]?.trim() || "0"
+              }));
 
-            return {
-              sanPham: {
-                id: "",
-                danhMucSanPhamId: row[0],
-                tenSanPham: row[3],
-                thongSo: row[7] || "",
-                maSp: row[1],
-                thuongHieu: row[2],
-                moTa: row[6]
-              },
-              listCongSuat
-            };
-          });
+              return {
+                sanPham: {
+                  id: "",
+                  danhMucSanPhamId: row[0] || "",
+                  tenSanPham: row[3] || "",
+                  thongSo: row[7] || "",
+                  maSp: row[1] || "",
+                  thuongHieu: row[2] || "",
+                  moTa: row[6] || ""
+                },
+                listCongSuat
+              };
+            } catch (rowError) {
+              console.error(`Lỗi xử lý dòng ${index + 2}:`, rowError);
+              message.error(`Lỗi xử lý dòng ${index + 2} trong file Excel`);
+              return null;
+            }
+          }).filter(Boolean); // Loại bỏ các dòng lỗi
+
+          if (products.length === 0) {
+            message.error('Không có dữ liệu hợp lệ trong file Excel');
+            return;
+          }
 
           // Store processed data for later use
           tempExcelData.value = products;
 
           // Prepare preview data
           excelPreviewData.value = rows.map(row => ({
-            danhMucSanPhamId: row[0],
-            maSp: row[1],
-            thuongHieu: row[2],
-            tenSanPham: row[3],
-            congSuat: row[4],
-            giaTien: row[5],
-            moTa: row[6],
+            danhMucSanPhamId: row[0] || "",
+            maSp: row[1] || "",
+            thuongHieu: row[2] || "",
+            tenSanPham: row[3] || "",
+            congSuat: row[4] ? String(row[4]) : "",
+            giaTien: row[5] ? String(row[5]) : "",
+            moTa: row[6] || "",
             thongSo: row[7] || ""
           }));
 
           // Show preview modal
           previewModalVisible.value = true;
+          message.success(`Đã xử lý thành công ${products.length} sản phẩm từ file Excel`);
         } catch (error) {
           console.error('Error processing Excel:', error);
-          message.error('Có lỗi xảy ra khi xử lý file Excel');
+          message.error('Có lỗi xảy ra khi xử lý file Excel. Vui lòng kiểm tra định dạng file.');
         }
       };
       reader.readAsArrayBuffer(file.originFileObj);
@@ -710,11 +801,7 @@ const confirmUpload = async () => {
       return;
     }
 
-    await axios.post('https://thegioiden.store/api/them-moi-list-sp', tempExcelData.value, {
-      headers: {
-        'Authorization': `Bearer ${user.token}`
-      }
-    });
+    await axiosInstance.post('https://thegioiden.store/api/them-moi-list-sp', tempExcelData.value);
 
     message.success('Import sản phẩm thành công');
     previewModalVisible.value = false;
@@ -723,6 +810,7 @@ const confirmUpload = async () => {
     console.error('Error uploading data:', error);
     if (error.response?.status === 401) {
       message.error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
+      router.push('/login');
     } else {
       message.error('Có lỗi xảy ra khi upload dữ liệu');
     }

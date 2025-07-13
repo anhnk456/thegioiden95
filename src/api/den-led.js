@@ -1,7 +1,8 @@
 import axiosInstance from '@/config/axios.config';
 import { convertURLParams } from "@/until/format";
+import { API_CONFIG } from '@/config/api.config';
 
-const URL = "https://thegioiden.store/api/";
+const { BASE_URL } = API_CONFIG;
 
 const API = {
   // API Sản phẩm
@@ -43,154 +44,154 @@ const API = {
 };
 
 export const getTrangChu = async () => {
-  const res = await axiosInstance.get(`${URL}${API.trang_chu}`);
+  const res = await axiosInstance.get(`${BASE_URL}/${API.trang_chu}`);
   return res;
 };
 
 export const getAllSp = async (params) => {
   const res = await axiosInstance.get(
-    `${URL}${API.get_all_sp}?${convertURLParams(params)}`
+    `${BASE_URL}/${API.get_all_sp}?${convertURLParams(params)}`
   );
   return res;
 };
 
 export const getAllDanhMuc = async () => {
-  const res = await axiosInstance.get(`${URL}${API.get_all_dm}`);
+  const res = await axiosInstance.get(`${BASE_URL}/${API.get_all_dm}`);
   return res;
 };
 
 export const getAllBanner = async () => {
-  const res = await axiosInstance.get(`${URL}${API.get_bn}`);
+  const res = await axiosInstance.get(`${BASE_URL}/${API.get_bn}`);
   return res;
 };
 
 export const getAllThuMuc = async () => {
-  const res = await axiosInstance.get(`${URL}${API.get_all_tm}`);
+  const res = await axiosInstance.get(`${BASE_URL}/${API.get_all_tm}`);
   return res;
 };
 
 export const getAllThuMucByDanhMuc = async () => {
-  const res = await axiosInstance.get(`${URL}${API.get_all_tm_by_dm}`);
+  const res = await axiosInstance.get(`${BASE_URL}/${API.get_all_tm_by_dm}`);
   return res;
 };
 
 export const getSpByDm = async (params) => {
   const res = await axiosInstance.get(
-    `${URL}${API.get_sp_by_dm}?${convertURLParams(params)}`
+    `${BASE_URL}/${API.get_sp_by_dm}?${convertURLParams(params)}`
   );
   return res;
 };
 
 export const search = async (params) => {
   const res = await axiosInstance.get(
-    `${URL}${API.search}?${convertURLParams(params)}`
+    `${BASE_URL}/${API.search}?${convertURLParams(params)}`
   );
   return res;
 };
 
 export const detailProduct = async (params) => {
   const res = await axiosInstance.get(
-    `${URL}${API.detail_product}?${convertURLParams(params)}`
+    `${BASE_URL}/${API.detail_product}?${convertURLParams(params)}`
   );
   return res;
 };
 
 export const getAllTongMuc = async () => {
-  const res = await axiosInstance.get(`${URL}${API.get_all_tong_muc}`);
+  const res = await axiosInstance.get(`${BASE_URL}/${API.get_all_tong_muc}`);
   return res;
 };
 
 export const getAllTongMucChild = async () => {
-  const res = await axiosInstance.get(`${URL}${API.get_all_tong_muc_child}`);
+  const res = await axiosInstance.get(`${BASE_URL}/${API.get_all_tong_muc_child}`);
   return res;
 };
 
 export const addCategoryParent = async (data) => {
-  const res = await axiosInstance.post(`${URL}${API.add_tm}`, data);
+  const res = await axiosInstance.post(`${BASE_URL}/${API.add_tm}`, data);
   return res;
 };
 
 export const addBanner = async (data) => {
-  const res = await axiosInstance.post(`${URL}${API.them_bn}`, data);
+  const res = await axiosInstance.post(`${BASE_URL}/${API.them_bn}`, data);
   return res;
 };
 
 export const editCategoryParent = async (data) => {
-  const res = await axiosInstance.put(`${URL}${API.sua_tm}`, data);
+  const res = await axiosInstance.put(`${BASE_URL}/${API.sua_tm}`, data);
   return res;
 };
 
 export const deleteCategoryParent = async (id) => {
-  const res = await axiosInstance.delete(`${URL}${API.xoa_tm}?id=${id}`);
+  const res = await axiosInstance.delete(`${BASE_URL}/${API.xoa_tm}?id=${id}`);
   return res;
 };
 
 export const deleteBanner = async (id) => {
-  const res = await axiosInstance.delete(`${URL}${API.xoa_bn}?id=${id}`);
+  const res = await axiosInstance.delete(`${BASE_URL}/${API.xoa_bn}?id=${id}`);
   return res;
 };
 
 export const deleteProduct = async (id) => {
-  const res = await axiosInstance.delete(`${URL}${API.xoa_sp}?id=${id}`);
+  const res = await axiosInstance.delete(`${BASE_URL}/${API.xoa_sp}?id=${id}`);
   return res;
 };
 
 export const addProduct = async (data) => {
-  const res = await axiosInstance.post(`${URL}${API.them_sp}`, data);
+  const res = await axiosInstance.post(`${BASE_URL}/${API.them_sp}`, data);
   return res;
 };
 
 export const editProduct = async (data) => {
-  const res = await axiosInstance.put(`${URL}${API.sua_sp}`, data);
+  const res = await axiosInstance.put(`${BASE_URL}/${API.sua_sp}`, data);
   return res;
 };
 
 export const addCategory = async (data) => {
-  const res = await axiosInstance.post(`${URL}${API.add_dm}`, data);
+  const res = await axiosInstance.post(`${BASE_URL}/${API.add_dm}`, data);
   return res;
 };
 
 export const editCategory = async (data) => {
-  const res = await axiosInstance.put(`${URL}${API.sua_dm}`, data);
+  const res = await axiosInstance.put(`${BASE_URL}/${API.sua_dm}`, data);
   return res;
 };
 
 export const deleteCategory = async (id) => {
-  const res = await axiosInstance.delete(`${URL}${API.xoa_dm}?id=${id}`);
+  const res = await axiosInstance.delete(`${BASE_URL}/${API.xoa_dm}?id=${id}`);
   return res;
 };
 
 export const addPriority = async (data) => {
-  const res = await axiosInstance.post(`${URL}${API.them_tong_muc}`, data);
+  const res = await axiosInstance.post(`${BASE_URL}/${API.them_tong_muc}`, data);
   return res;
 };
 
 export const editPriority = async (data) => {
-  const res = await axiosInstance.put(`${URL}${API.sua_tong_muc}`, data);
+  const res = await axiosInstance.put(`${BASE_URL}/${API.sua_tong_muc}`, data);
   return res;
 };
 
 export const deletePriority = async (id) => {
-  const res = await axiosInstance.delete(`${URL}${API.xoa_tong_muc}?id=${id}`);
+  const res = await axiosInstance.delete(`${BASE_URL}/${API.xoa_tong_muc}?id=${id}`);
   return res;
 };
 
 export const uuTienSanPham = async (data) => {
-  const res = await axiosInstance.put(`${URL}${API.uu_tien_sp}`, data);
+  const res = await axiosInstance.put(`${BASE_URL}/${API.uu_tien_sp}`, data);
   return res;
 };
 
 export const uuTienDanhMuc = async (data) => {
-  const res = await axiosInstance.put(`${URL}${API.uu_tien_dm}`, data);
+  const res = await axiosInstance.put(`${BASE_URL}/${API.uu_tien_dm}`, data);
   return res;
 };
 
 export const uuTienThuMuc = async (data) => {
-  const res = await axiosInstance.put(`${URL}${API.uu_tien_tm}`, data);
+  const res = await axiosInstance.put(`${BASE_URL}/${API.uu_tien_tm}`, data);
   return res;
 };
 
 export const uuTienTongMuc = async (data) => {
-  const res = await axiosInstance.put(`${URL}${API.uu_tien_tong_muc}`, data);
+  const res = await axiosInstance.put(`${BASE_URL}/${API.uu_tien_tong_muc}`, data);
   return res;
 };
