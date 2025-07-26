@@ -60,8 +60,13 @@ axiosInstance.interceptors.response.use(
       message.error('Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng của bạn.');
     } else if (error.response.status === 401) {
       message.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-      // Optionally redirect to login page
-      window.location.href = '/login';
+      // Clear user data and redirect to login page
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      // Use router instead of window.location for better SPA navigation
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     } else {
       message.error(error.response?.data?.message || 'Đã xảy ra lỗi. Vui lòng thử lại sau.');
     }

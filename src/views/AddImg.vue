@@ -384,6 +384,12 @@ const fetch = async () => {
     dataSource.value = res.data;
   } catch (error) {
     console.log(error);
+    if (error?.response?.status === 401) {
+      message.error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
+      router.push('/login');
+    } else {
+      message.error('Có lỗi xảy ra khi tải dữ liệu');
+    }
   } finally {
     loadingTable.value = false;
   }
@@ -423,6 +429,12 @@ const handleConfirmDelete = async () => {
     await fetch();
   } catch (error) {
     console.log(error);
+    if (error?.response?.status === 401) {
+      message.error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
+      router.push('/login');
+    } else {
+      message.error('Có lỗi xảy ra khi xóa sản phẩm');
+    }
   } finally {
     loadingTable.value = false;
     confirmDeleteVisible.value = false;
@@ -465,6 +477,12 @@ const onEdit = async (record) => {
     }
   } catch (error) {
     console.log(error);
+    if (error?.response?.status === 401) {
+      message.error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
+      router.push('/login');
+    } else {
+      message.error('Có lỗi xảy ra khi tải thông tin sản phẩm');
+    }
   } finally {
     loadingDrawer.value = false;
   }
