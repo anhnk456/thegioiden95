@@ -87,7 +87,7 @@
         show-less-items
       />
     </div>
-    <a-drawer title="Thêm danh mục" size="large" :open="open" @close="onClose">
+    <a-drawer :title="title" size="large" :open="open" @close="onClose">
       <a-spin :spinning="loadingDrawer">
         <a-form
           ref="formRef"
@@ -315,6 +315,9 @@ const listDynamic = ref<DynamicList[]>([]);
 
 const headerRef = ref();
 const formRef = ref();
+const title = computed(() => {
+  return formAdd.value.id ? "Sửa sản phẩm" : "Thêm sản phẩm";
+});
 
 const open = ref(false);
 const loadingTable = ref(false);
@@ -452,11 +455,11 @@ const onEdit = async (record) => {
         groupValue: list.map((item) => item.groupValue).join("-"),
       });
     }
-
-    if (res.data.sanPham.linkAnhChinh) {
+    if (res.data.sanPham.linkAnhChinh!=null && res.data.sanPham.linkAnhChinh) {
       listImgProduct.value.push(res.data.sanPham.linkAnhChinh);
     }
-    if (res.data.listAnh) {
+    // console.log("list anh",(Array.isArray(res.data.listAnh) && res.data.listAnh.length > 0))
+    if (Array.isArray(res.data.listAnh) && res.data.listAnh.length > 0) {
       const listAnhFilter = res.data.listAnh.map((item) => item.linkAnh);
       listImgProduct.value = [...listImgProduct.value, ...listAnhFilter];
     }
@@ -519,52 +522,50 @@ const submit = async () => {
       message.error("Công suất và giá tiến công suất phải tương ứng");
       return;
     }
-
     if (formAdd.value.id) {
-      const listAnhFilter = listImgProduct.value.map((item) => {
+      // console.log("product",(Array.isArray(listImgProduct.value) && listImgProduct.value.length > 0))
+      // if (){
+      const listAnhFilter =(Array.isArray(listImgProduct.value) && listImgProduct.value.length > 0)? listImgProduct.value.map((item) => {
         return {
           linkAnh: item,
         };
-      });
+      }):null;
       const bodyRequest = {
         sanPham: {
           ...formAdd.value,
           giaSp: formAdd.value.giaSp,
-          linkAnhChinh: listAnhFilter[0].linkAnh,
+          linkAnhChinh: (Array.isArray(listImgProduct.value) && listImgProduct.value.length > 0)?listAnhFilter[0].linkAnh:null,
         },
-        listAnh: listAnhFilter.slice(1),
+        listAnh:(Array.isArray(listImgProduct.value) && listImgProduct.value.length > 0)? listAnhFilter.slice(1):null,
         ...phanLoaiList,
       };
-      console.log('Request thêm mới:', bodyRequest);
       await editProduct(bodyRequest);
       message.success("Sửa sản phẩm thành công");
       onClose();
       await fetch();
     } else {
-      const listAnhFilter = listImgProduct.value.map((item) => {
+      const listAnhFilter =(Array.isArray(listImgProduct.value) && listImgProduct.value.length > 0)? listImgProduct.value.map((item) => {
         return {
           linkAnh: item,
         };
-      });
+      }):null;
       const bodyRequest = {
         sanPham: {
           ...formAdd.value,
           giaSp: formAdd.value.giaSp,
-          linkAnhChinh: listAnhFilter[0].linkAnh,
+          linkAnhChinh:(Array.isArray(listImgProduct.value) && listImgProduct.value.length > 0)? listAnhFilter[0].linkAnh:null,
         },
-        listAnh: listAnhFilter.slice(1),
+        listAnh: (Array.isArray(listImgProduct.value) && listImgProduct.value.length > 0)?listAnhFilter.slice(1):null,
         ...phanLoaiList,
       };
-      console.log('Request thêm mới:', bodyRequest);
-      // const response = await addProduct(bodyRequest);
+      const response = await addProduct(bodyRequest);
       message.success("Thêm mới sản phẩm thành công");
-      // onClose();
-      // await fetch();
+      onClose();
+      await fetch();
     }
   } catch (error) {
-    // Nếu có lỗi thì chỉ báo lỗi ra, không đóng drawer, không reload danh sách, không chuyển hướng
-    console.log('Error response:', error?.response);
-    message.error(error?.response?.data?.message || 'Có lỗi xảy ra khi thêm sản phẩm');
+    console.log('Error :', error);
+    message.error(error?.response?.data?.message || 'Có lỗi xảy ra, cháu óc liên hệ Chú Đức');
   }
   // finally {
   //   loadingDrawer.value = false;
