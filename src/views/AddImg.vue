@@ -583,11 +583,15 @@ const submit = async () => {
     }
   } catch (error) {
     console.log('Error :', error);
-    message.error(error?.response?.data?.message || 'Có lỗi xảy ra, cháu óc liên hệ Chú Đức');
+    if (error?.response?.status === 401) {
+      message.error('Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại');
+      router.push('/login');
+    } else {
+      message.error(error?.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại');
+    }
+  } finally {
+    loadingDrawer.value = false;
   }
-  // finally {
-  //   loadingDrawer.value = false;
-  // }
 };
 
 const handleChangePage = async (page, pageSize) => {
